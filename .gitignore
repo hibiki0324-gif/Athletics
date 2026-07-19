@@ -1,0 +1,15 @@
+# Mac
+.DS_Store
+
+# Environment
+.env
+
+# Logs
+*.log
+
+# Docker
+*.pid
+
+# Upload files
+public/uploads/*
+!public/uploads/.gitkeep

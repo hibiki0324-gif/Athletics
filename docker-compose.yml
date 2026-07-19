@@ -27,6 +27,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: athletics-phpmyadmin
+    platform: linux/amd64
     depends_on:
       - db
     ports:
