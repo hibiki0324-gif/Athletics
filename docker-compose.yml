@@ -1,39 +1,47 @@
-services:
+name: athletics
 
+services:
   web:
-    image: php:8.3-apache
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
     container_name: athletics-web
+    volumes:
+      - .:/var/www/html
     ports:
       - "8080:80"
-    volumes:
-      - ./public:/var/www/html
+    environment:
+      - DB_HOST=db
+      - DB_DATABASE=athletics
+      - DB_USERNAME=athletics_user
+      - DB_PASSWORD=secret
     depends_on:
       - db
 
   db:
-    image: mysql:8.4
+    image: mysql:8.0
     container_name: athletics-db
     environment:
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: athletics
-      MYSQL_USER: athletics
-      MYSQL_PASSWORD: athletics
+      MYSQL_USER: athletics_user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root_secret
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
-      - db-data:/var/lib/mysql
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin:latest
     container_name: athletics-phpmyadmin
-    platform: linux/amd64
-    depends_on:
-      - db
-    ports:
-      - "8081:80"
     environment:
       PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root_secret
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
 
 volumes:
-  db-data:
+  db_data:
