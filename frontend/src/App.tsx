@@ -1,7 +1,6 @@
 import Footer from "./components/layout/Footer"
 import Header from "./components/layout/Header"
-import RecentResults from "./components/top/RecentResults"
-import ScoreBoard from "./components/top/ScoreBoard"
+import Card from "./components/top/card"
 import TopImage from "./components/top/TopImage"
 
 function App() {
@@ -11,8 +10,7 @@ function App() {
       <Header />
         <main className="flex-1">
           <TopImage />
-          <RecentResults />
-          <ScoreBoard />
+          <Card />
         </main>
       <Footer />
     </div>
