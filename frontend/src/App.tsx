@@ -1,5 +1,8 @@
 import Footer from "./components/layout/Footer"
 import Header from "./components/layout/Header"
+import RecentResults from "./components/top/RecentResults"
+import ScoreBoard from "./components/top/ScoreBoard"
+import TopImage from "./components/top/TopImage"
 
 function App() {
 
@@ -7,7 +10,9 @@ function App() {
     <div className="min-h-screen flex flex-col">
       <Header />
         <main className="flex-1">
-          {/*ページの中身*/}
+          <TopImage />
+          <RecentResults />
+          <ScoreBoard />
         </main>
       <Footer />
     </div>
