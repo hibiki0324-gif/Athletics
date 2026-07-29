@@ -13,7 +13,7 @@ function Header(){
                     <button>ログイン</button>
                 </div>
             </div>
-            <div className='mt-[35px]'>
+            <div className='mt-[35px] mb-[30px]'>
                 {/* ヘッダーは配列+mapで回した方がいい？ */}
                 <ul className='grid grid-cols-4 items-center'>
                     <li className="font-medium">
