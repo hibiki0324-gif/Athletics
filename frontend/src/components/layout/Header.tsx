@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.png'
 
 
@@ -17,16 +18,16 @@ function Header(){
                 {/* ヘッダーは配列+mapで回した方がいい？ */}
                 <ul className='grid grid-cols-4 items-center'>
                     <li className="font-medium">
-                        <a href="#" className="flex flex-col items-center text-xl">
+                        <Link to="/" className="flex flex-col items-center text-xl">
                             トップページ
                             <span className="text-sm">TOP</span>
-                        </a>
+                        </Link>
                     </li>
                     <li className="font-medium">
-                        <a href="#" className="flex flex-col items-center text-xl">
+                        <Link to="/players" className="flex flex-col items-center text-xl">
                             選手紹介
                             <span className="text-sm">PLAYER</span>
-                        </a>
+                        </Link>
                     </li>
                     <li className="font-medium">
                         <a href="#" className="flex flex-col items-center text-xl">
