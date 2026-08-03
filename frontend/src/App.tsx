@@ -1,19 +1,18 @@
-import Footer from "./components/layout/Footer"
-import Header from "./components/layout/Header"
-import Card from "./components/top/card"
-import TopImage from "./components/top/TopImage"
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Layout from './components/layout/Layout'
+import Top from './pages/public/Top'
+import Player from './pages/public/Player'
 
 function App() {
-
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-        <main className="flex-1">
-          <TopImage />
-          <Card />
-        </main>
-      <Footer />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Top />} />
+          <Route path="/players" element={<Player />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 

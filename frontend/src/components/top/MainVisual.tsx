@@ -1,13 +1,13 @@
 import main from '../../assets/mainvisual.png'
 
-function TopImage(){
-    return(
+function MainVisual() {
+    return (
         <div className='relative w-full h-[500px] overflow-hidden flex items-center justify-center'>
-            <img src={main} alt="試合風景・チーム写真" className="absolute inset-0 w-full h-full object-cover"/>
+            <img src={main} alt="試合風景・チーム写真" className="absolute inset-0 w-full h-full object-cover" />
             <div className="relative z-10 bg-black/75 rounded-lg w-[65%]">
                 <table className="w-full border-collapse">
                     <thead>
-                        <tr className="text-gray-400 text-white">
+                        <tr className="text-white">
                             <th className="border-r px-6 py-4 text-left font-normal">TEAM</th>
                             <th className="px-4 py-4 font-normal">1</th>
                             <th className="px-4 py-4 font-normal">2</th>
@@ -49,4 +49,4 @@ function TopImage(){
     )
 };
 
-export default TopImage;
+export default MainVisual;
