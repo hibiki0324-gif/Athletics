@@ -11,6 +11,7 @@ function PlayerCard(){
                     <p className="py-[5px]">岡嶋英雄</p>
                     <p className="py-[5px]">右投右打</p>                
                 </div>
+                {/* とりあえずUI確認でハードコード実装 */}
                 <div className="w-full text-center text-xl font-medium">
                     <img src={playerImg} alt="選手写真" className="w-[60%] mx-auto"/>
                     <p className="text-2xl py-[5px]">10</p>
