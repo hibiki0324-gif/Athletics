@@ -15,7 +15,6 @@ function Header(){
                 </div>
             </div>
             <div className='mt-[35px] mb-[30px]'>
-                {/* ヘッダーは配列+mapで回した方がいい？ */}
                 <ul className='grid grid-cols-4 items-center'>
                     <li className="font-medium">
                         <Link to="/" className="flex flex-col items-center text-xl">
@@ -30,10 +29,10 @@ function Header(){
                         </Link>
                     </li>
                     <li className="font-medium">
-                        <a href="#" className="flex flex-col items-center text-xl">
+                        <Link to="results" className="flex flex-col items-center text-xl">
                             試合結果
                             <span className="text-sm">RESULT</span>
-                        </a>
+                        </Link>
                     </li>
                     <li className="font-medium">
                         <a href="#" className="flex flex-col items-center text-xl">
