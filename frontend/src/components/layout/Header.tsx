@@ -11,7 +11,7 @@ function Header(){
                     <img src={logo} alt='チームlogo' className='w-[20%] h-auto' />
                 </div>
                 <div className="flex justify-end pr-[50px]">
-                    <button>ログイン</button>
+                    <Link to="/login">ログイン</Link>
                 </div>
             </div>
             <div className='mt-[35px] mb-[30px]'>
