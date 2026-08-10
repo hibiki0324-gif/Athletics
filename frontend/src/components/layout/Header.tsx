@@ -29,16 +29,16 @@ function Header(){
                         </Link>
                     </li>
                     <li className="font-medium">
-                        <Link to="results" className="flex flex-col items-center text-xl">
+                        <Link to="/results" className="flex flex-col items-center text-xl">
                             試合結果
                             <span className="text-sm">RESULT</span>
                         </Link>
                     </li>
                     <li className="font-medium">
-                        <a href="#" className="flex flex-col items-center text-xl">
+                        <Link to="/stats" className="flex flex-col items-center text-xl">
                             個人成績
                             <span className="text-sm">STATS</span>
-                        </a>
+                        </Link>
                     </li>
                 </ul>
 
