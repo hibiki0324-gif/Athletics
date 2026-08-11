@@ -1,20 +1,20 @@
 name: athletics
 
 services:
-  web:
+  backend:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
-    container_name: athletics-web
+      dockerfile: docker/python/Dockerfile
+    container_name: athletics-backend
     volumes:
-      - .:/var/www/html
+      - ./backend:/app
     ports:
-      - "8080:80"
+      - "8000:8000"
     environment:
-      - DB_HOST=db
-      - DB_DATABASE=athletics
-      - DB_USERNAME=athletics_user
-      - DB_PASSWORD=secret
+      DB_HOST: db
+      DB_DATABASE: athletics
+      DB_USERNAME: athletics_user
+      DB_PASSWORD: secret
     depends_on:
       - db
 

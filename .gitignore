@@ -13,3 +13,7 @@
 # Upload files
 public/uploads/*
 !public/uploads/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
