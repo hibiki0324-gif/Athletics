@@ -2,34 +2,125 @@
 
 ## プロジェクト概要
 
-草野球チーム「Athletics」Webサイト開発プロジェクトです。
+草野球チーム「Athletics」のWebサイト開発プロジェクトです。
 
-Reactを利用したフロントエンド開発を中心に、Docker環境上で開発を行います。
+Reactを利用したフロントエンド、FastAPIを利用したバックエンド、MySQLを利用したデータベースで構成されています。
+
+開発環境はDockerを利用して構築します。
+
+---
+
+# システム構成
+
+現在のシステム構成は以下です。
+
+```text
+┌──────────────────────┐
+│      Browser         │
+│                      │
+│  React + Vite        │
+│  localhost:5173      │
+└──────────┬───────────┘
+           │ HTTP
+           │ API Request
+           ↓
+┌──────────────────────┐
+│      FastAPI         │
+│                      │
+│  localhost:8000      │
+└──────────┬───────────┘
+           │ SQLAlchemy
+           ↓
+┌──────────────────────┐
+│       MySQL          │
+│                      │
+│  localhost:3307      │
+└──────────────────────┘
+```
+
+フロントエンドから直接MySQLへ接続することはありません。
+
+基本的には、
+
+```text
+React
+  ↓
+FastAPI API
+  ↓
+SQLAlchemy
+  ↓
+MySQL
+```
+
+という流れでデータを取得・登録します。
 
 ---
 
 # 開発環境
 
-| 項目       | 内容                 |
-| -------- | ------------------ |
-| OS       | Mac                |
-| エディタ     | Visual Studio Code |
-| Frontend | React + Vite       |
-| Backend  | 未定                 |
-| Database | MySQL              |
-| 開発環境     | Docker             |
+| 項目        | 内容                 |
+| --------- | ------------------ |
+| OS        | Mac                |
+| エディタ      | Visual Studio Code |
+| Frontend  | React + Vite       |
+| Backend   | FastAPI + Python   |
+| ORM       | SQLAlchemy         |
+| Database  | MySQL 8.0          |
+| APIドキュメント | Swagger UI         |
+| 開発環境      | Docker             |
+| パッケージ管理   | npm / pip          |
 
 ---
 
 # プロジェクト構成
 
-```
+```text
 Athletics
-├── frontend              # Reactアプリケーション
-├── backend               # Backendアプリケーション
-├── docker-compose.yml    # Docker設定
+├── frontend
+│   ├── src
+│   │   ├── components
+│   │   ├── pages
+│   │   ├── types
+│   │   └── assets
+│   ├── package.json
+│   └── package-lock.json
+│
+├── backend
+│   ├── app
+│   │   └── database.py
+│   ├── models
+│   │   ├── player.py
+│   │   ├── player_position.py
+│   │   └── position.py
+│   ├── routers
+│   │   └── players.py
+│   ├── schemas
+│   │   └── player.py
+│   ├── main.py
+│   └── requirements.txt
+│
+├── database
+│   └── init.sql
+│
+├── docker
+│   └── python
+│       └── Dockerfile
+│
+├── docker-compose.yml
 └── README.md
 ```
+
+---
+
+# 使用ポート
+
+| サービス       | URL / Port                 | 用途          |
+| ---------- | -------------------------- | ----------- |
+| React      | http://localhost:5173      | フロントエンド     |
+| FastAPI    | http://localhost:8000      | Backend API |
+| Swagger UI | http://localhost:8000/docs | API確認・操作    |
+| MySQL      | localhost:3307             | Database    |
+| phpMyAdmin | http://localhost:8081      | DB管理        |
 
 ---
 
@@ -43,15 +134,16 @@ Athletics
 * Docker Desktop
 * Visual Studio Code
 * Node.js
+* npm
 
 確認コマンド：
 
 ```bash
 node -v
-```
-
-```bash
 npm -v
+git --version
+docker --version
+docker compose version
 ```
 
 ---
@@ -60,19 +152,17 @@ npm -v
 
 作業用ディレクトリへ移動します。
 
-例：
-
 ```bash
 cd ~/dev/web
 ```
 
-リポジトリ取得：
+リポジトリを取得します。
 
 ```bash
 git clone https://github.com/hibiki0324-gif/Athletics.git
 ```
 
-プロジェクトへ移動：
+プロジェクトへ移動します。
 
 ```bash
 cd Athletics
@@ -92,9 +182,83 @@ pwd
 
 ---
 
-# 3. React環境セットアップ
+# 3. mainブランチを最新化
 
-frontendディレクトリへ移動します。
+clone直後はmainブランチになっていることを確認します。
+
+```bash
+git switch main
+git pull origin main
+```
+
+確認：
+
+```bash
+git status
+git branch
+```
+
+現在のブランチに `*` が表示されます。
+
+---
+
+# 4. Docker起動
+
+プロジェクト直下で実行します。
+
+```bash
+docker compose up -d
+```
+
+起動状態を確認します。
+
+```bash
+docker compose ps
+```
+
+以下のようにBackend、DB、phpMyAdminなどが起動していればOKです。
+
+```text
+athletics-backend
+athletics-db
+athletics-phpmyadmin
+```
+
+---
+
+# Dockerを起動する理由
+
+Reactから選手情報などを取得する場合、Backend APIが必要です。
+
+```text
+React
+ ↓
+http://localhost:8000/players
+ ↓
+FastAPI
+ ↓
+MySQL
+```
+
+そのため、Frontendだけを起動してもAPIからデータを取得することはできません。
+
+開発時は基本的に、
+
+```text
+Docker起動
+    ↓
+Backend + MySQL起動
+    ↓
+React起動
+```
+
+という順番で起動します。
+
+---
+
+# 5. React環境セットアップ
+
+Frontendディレクトリへ移動します。
 
 ```bash
 cd frontend
@@ -108,9 +272,7 @@ npm install
 
 `npm install`を実行すると、`package.json`に記載されたライブラリがインストールされます。
 
-例：
-
-```
+```text
 package.json
       ↓
 npm install
@@ -124,9 +286,7 @@ node_modules作成
 
 `node_modules`にはReactや各種ライブラリの実体が保存されます。
 
-例：
-
-```
+```text
 frontend
 ├── package.json
 ├── package-lock.json
@@ -139,13 +299,13 @@ frontend
 
 * ファイル数が非常に多い
 * 環境ごとの差異がある
-* npm installで再生成可能
+* `npm install`で再生成可能
 
 ---
 
-# 4. React起動
+# 6. React起動
 
-frontendディレクトリで実行します。
+Frontendディレクトリで実行します。
 
 ```bash
 npm run dev
@@ -153,13 +313,13 @@ npm run dev
 
 成功すると以下のように表示されます。
 
-```
+```text
 Local: http://localhost:5173/
 ```
 
-ブラウザ：
+ブラウザで以下を開きます。
 
-```
+```text
 http://localhost:5173
 ```
 
@@ -173,157 +333,411 @@ http://localhost:5173
 
 停止する場合：
 
-```bash
+```text
 Ctrl + C
 ```
 
 ---
 
-# Docker起動
+# Backend APIの確認
 
-プロジェクト直下へ移動します。
+BackendはFastAPIで構築されています。
 
-```bash
-cd ~/dev/web/Athletics
-```
-
-確認：
+起動確認：
 
 ```bash
-ls
+curl http://localhost:8000/
 ```
 
-以下が存在することを確認してください。
+正常に起動していれば、以下のようなレスポンスが返ります。
 
-```
-docker-compose.yml
+```json
+{
+  "message": "Athletics API is running"
+}
 ```
 
-Docker起動：
+---
+
+# Swagger UI
+
+FastAPIにはSwagger UIが用意されています。
+
+ブラウザで以下を開きます。
+
+```text
+http://localhost:8000/docs
+```
+
+Swagger UIでは、現在Backendに実装されているAPIを確認できます。
+
+また、ブラウザ上からAPIを実際に実行することもできます。
+
+```text
+GET
+POST
+PUT
+```
+
+などのAPIを選択し、
+
+```text
+Try it out
+```
+
+を押すことでリクエストを送信できます。
+
+---
+
+# 選手API
+
+現在、選手APIとして以下を実装しています。
+
+| Method | Endpoint               | 内容     |
+| ------ | ---------------------- | ------ |
+| GET    | `/players`             | 選手一覧取得 |
+| GET    | `/players/{player_id}` | 選手詳細取得 |
+| POST   | `/players`             | 選手登録   |
+| PUT    | `/players/{player_id}` | 選手更新   |
+
+---
+
+# 選手一覧を取得する
+
+以下のURLへアクセスします。
+
+```text
+http://localhost:8000/players
+```
+
+またはターミナルから、
+
+```bash
+curl http://localhost:8000/players
+```
+
+実行します。
+
+レスポンス例：
+
+```json
+[
+  {
+    "id": 1,
+    "name": "今村 響",
+    "uniform_number": 38,
+    "batting_hand": "右",
+    "throwing_hand": "右",
+    "profile_image": null,
+    "is_active": true
+  },
+  {
+    "id": 2,
+    "name": "岡嶋 竜也",
+    "uniform_number": 6,
+    "batting_hand": "右",
+    "throwing_hand": "右",
+    "profile_image": null,
+    "is_active": true
+  }
+]
+```
+
+---
+
+# Swagger UIから選手を登録する
+
+開発中にテストデータを追加したい場合は、Swagger UIを利用できます。
+
+## 1. Swagger UIを開く
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+## 2. POST /playersを開く
+
+Swagger UIで、
+
+```text
+POST /players
+```
+
+を探します。
+
+---
+
+## 3. Try it outを押す
+
+右側の、
+
+```text
+Try it out
+```
+
+を押します。
+
+---
+
+## 4. JSONを入力
+
+例えば、
+
+```json
+{
+  "name": "テスト 太郎",
+  "uniform_number": 10,
+  "batting_hand": "右",
+  "throwing_hand": "右",
+  "profile_image": null
+}
+```
+
+を入力します。
+
+---
+
+## 5. Executeを押す
+
+`Execute`を押すとAPIへリクエストが送信されます。
+
+正常に登録されると、HTTPステータス `201` が返ります。
+
+---
+
+# 選手登録時の注意
+
+現在、背番号は重複できません。
+
+例えば、すでに、
+
+```text
+背番号 10
+```
+
+の選手が登録されている状態で、もう一度10番を登録すると、
+
+```json
+{
+  "detail": "その背番号は既に使用されています"
+}
+```
+
+というエラーになります。
+
+テストデータを追加するときは、既存選手と異なる背番号を使用してください。
+
+---
+
+# DBを直接確認する
+
+MySQLのデータを確認したい場合は、phpMyAdminまたはMySQLコマンドを利用できます。
+
+## phpMyAdmin
+
+ブラウザで以下を開きます。
+
+```text
+http://localhost:8081
+```
+
+ログイン情報は `docker-compose.yml` の設定を確認してください。
+
+---
+
+## MySQLへコマンドラインから接続
+
+Dockerコンテナ内のMySQLへ接続できます。
+
+```bash
+docker compose exec db mysql --default-character-set=utf8mb4 -u root -p athletics
+```
+
+パスワード入力後、MySQLへ接続できます。
+
+---
+
+## playersテーブルを確認
+
+MySQLへ接続後、
+
+```sql
+SELECT * FROM players;
+```
+
+を実行します。
+
+特定の選手を確認する場合：
+
+```sql
+SELECT * FROM players WHERE id = 1;
+```
+
+---
+
+# テストデータを削除する
+
+テストで登録した選手を削除したい場合は、MySQLから削除できます。
+
+例えばIDが4の場合：
+
+```bash
+docker compose exec db mysql --default-character-set=utf8mb4 -u root -p athletics -e "DELETE FROM players WHERE id=4;"
+```
+
+注意：
+
+この操作はDBのデータを直接削除します。
+
+本番環境では使用せず、開発環境でのみ使用してください。
+
+---
+
+# init.sqlについて
+
+`database/init.sql`には、DBを初期構築するときに使用するSQLが記載されています。
+
+例えば、以下のような初期データが登録されています。
+
+```text
+今村 響
+岡嶋 竜也
+```
+
+そのため、初めてDocker環境を構築する開発者は、初期状態としてこれらの選手データを利用できます。
+
+---
+
+## init.sqlが実行されるタイミング
+
+`init.sql`は、MySQLのデータベースが初期化されるタイミングで実行されます。
+
+重要なのは、
+
+```text
+docker compose up
+```
+
+を実行するたびに `init.sql` が実行されるわけではないということです。
+
+既にMySQLのデータボリュームが存在する場合、基本的には既存のDBがそのまま使用されます。
+
+そのため、
+
+```text
+GitHubからmainをpull
+        ↓
+docker compose up -d
+```
+
+を行っても、既存DBのデータが自動的に初期化されるわけではありません。
+
+---
+
+# DBを完全に初期化したい場合
+
+開発環境でDBを作り直したい場合は、Dockerのボリュームを削除してから起動します。
+
+注意：
+
+**この操作を行うと、現在のDocker上のDBデータが削除されます。**
+
+実行前に必要なデータがないことを確認してください。
+
+```bash
+docker compose down -v
+```
+
+その後、
 
 ```bash
 docker compose up -d
 ```
 
-状態確認：
+を実行します。
 
-```bash
-docker ps
-```
+これにより新しいMySQLデータベースが作成され、`database/init.sql`による初期構築が行われます。
 
 ---
 
-# VS Code起動
+# CORSについて
 
-プロジェクト直下で実行します。
+FrontendとBackendは異なるポートで動作します。
 
-```bash
-code .
+```text
+Frontend
+http://localhost:5173
+
+Backend
+http://localhost:8000
 ```
 
-またはVS CodeからAthleticsフォルダを開いてください。
+そのため、Backend側でCORSを設定しています。
+
+現在は開発環境として、
+
+```text
+http://localhost:5173
+```
+
+からのアクセスを許可しています。
 
 ---
 
 # 毎日の作業開始手順
 
-## 1. 最新コード取得
+## 1. プロジェクトへ移動
 
 ```bash
-git pull
+cd ~/dev/web/Athletics
 ```
 
 ---
 
-## 2. ブランチ確認
+## 2. mainを最新化
 
 ```bash
-git branch
+git switch main
+git pull origin main
 ```
 
-現在のブランチには`*`が表示されます。
+---
+
+## 3. 作業ブランチを作成
+
+作業内容ごとにfeatureブランチを作成します。
+
+```bash
+git switch -c feature/機能名
+```
 
 例：
 
-```
-* feature/player-management
+```bash
+git switch -c feature/player-management
 ```
 
 ---
 
-## 3. React依存確認
+## 4. Docker起動
 
-frontendへ移動します。
+```bash
+docker compose up -d
+```
+
+---
+
+## 5. Frontend起動
 
 ```bash
 cd frontend
-```
-
-必要に応じて実行します。
-
-```bash
 npm install
+npm run dev
 ```
 
-通常、既に`node_modules`が存在する場合は不要です。
-
----
-
-## npm install後のGit確認
-
-npm install後は必ず確認します。
-
-```bash
-cd ..
-git status
-```
-
----
-
-## package-lock.jsonが変更された場合
-
-確認：
-
-```bash
-git diff frontend/package-lock.json
-```
-
-### 不要な変更例
-
-```
-ライブラリのパッチバージョン変更
-
-7.29.7
- ↓
-7.29.8
-```
-
-このような依存更新のみの場合は、基本的にコミット不要です。
-
-戻す場合：
-
-```bash
-git restore frontend/package-lock.json
-```
-
----
-
-## 新しいライブラリを追加した場合
-
-例：
-
-```bash
-npm install axios
-```
-
-この場合は以下が変更されます。
-
-```
-package.json
-package-lock.json
-```
-
-両方Git管理します。
+`npm install`は依存関係に変更がない場合、毎回実行する必要はありません。
 
 ---
 
@@ -331,27 +745,11 @@ package-lock.json
 
 ## mainブランチ
 
-mainは安定版です。
+`main`は安定版として扱います。
 
 基本的に直接編集しません。
 
----
-
-## 作業開始時
-
-作業内容ごとにfeatureブランチを作成します。
-
-例：
-
-```bash
-git checkout -b feature/player-management
-```
-
-確認：
-
-```bash
-git branch
-```
+作業するときは必ずfeatureブランチを作成します。
 
 ---
 
@@ -359,17 +757,20 @@ git branch
 
 形式：
 
-```
+```text
 feature/機能名
 ```
 
 例：
 
-```
+```text
 feature/header
 feature/login
 feature/player-management
+feature/player-api
 feature/game-result
+feature/batting-stats
+feature/update-readme-api
 ```
 
 ---
@@ -381,6 +782,16 @@ feature/game-result
 ```bash
 git status
 ```
+
+---
+
+## ブランチ確認
+
+```bash
+git branch
+```
+
+現在のブランチには `*` が表示されます。
 
 ---
 
@@ -409,7 +820,7 @@ git commit -m "変更内容"
 例：
 
 ```bash
-git commit -m "選手一覧画面追加"
+git commit -m "feat: add player management"
 ```
 
 ---
@@ -419,7 +830,7 @@ git commit -m "選手一覧画面追加"
 初回：
 
 ```bash
-git push -u origin feature/player-management
+git push -u origin feature/ブランチ名
 ```
 
 2回目以降：
@@ -432,29 +843,30 @@ git push
 
 # Pull Requestについて
 
-Pull Request(PR)とは、
+Pull Request（PR）とは、
 
 「featureブランチの変更をmainへ取り込む申請」です。
 
-開発フロー：
+基本的な開発フロー：
 
-```
-featureブランチ
-        |
-        ↓
+```text
+main
+ ↓
+featureブランチ作成
+ ↓
 開発
-        |
-        ↓
+ ↓
+動作確認
+ ↓
+commit
+ ↓
 GitHubへpush
-        |
-        ↓
+ ↓
 Pull Request作成
-        |
-        ↓
+ ↓
 レビュー
-        |
-        ↓
-main Merge
+ ↓
+mainへMerge
 ```
 
 ---
@@ -467,6 +879,8 @@ main Merge
 * 不要なファイルがないか
 * 命名が適切か
 * 他機能への影響がないか
+* APIの変更がある場合、既存機能に影響がないか
+* DBの変更がある場合、`init.sql`なども更新されているか
 
 ---
 
@@ -514,46 +928,95 @@ git push
 
 # Dockerコマンド一覧
 
-| 目的   | コマンド                 |
-| ---- | -------------------- |
-| 起動   | docker compose up -d |
-| 停止   | docker compose down  |
-| 状態確認 | docker ps            |
-| ログ確認 | docker logs コンテナ名    |
+| 目的           | コマンド                             |
+| ------------ | -------------------------------- |
+| 起動           | `docker compose up -d`           |
+| 停止           | `docker compose down`            |
+| 停止＋DBボリューム削除 | `docker compose down -v`         |
+| 状態確認         | `docker compose ps`              |
+| Backendログ確認  | `docker compose logs backend`    |
+| DBログ確認       | `docker compose logs db`         |
+| Backend再起動   | `docker compose restart backend` |
+
+---
+
+# API確認コマンド
+
+## Backendの起動確認
+
+```bash
+curl http://localhost:8000/
+```
+
+---
+
+## 選手一覧取得
+
+```bash
+curl http://localhost:8000/players
+```
+
+---
+
+## 選手詳細取得
+
+```bash
+curl http://localhost:8000/players/1
+```
+
+存在しないIDを指定した場合は、
+
+```bash
+curl http://localhost:8000/players/999
+```
+
+以下のような404エラーになります。
+
+```json
+{
+  "detail": "選手が見つかりません"
+}
+```
 
 ---
 
 # Gitコマンド一覧
 
-| 目的     | コマンド            |
-| ------ | --------------- |
-| 状態確認   | git status      |
-| 差分確認   | git diff        |
-| 追加     | git add .       |
-| 保存     | git commit -m   |
-| 送信     | git push        |
-| 取得     | git pull        |
-| ブランチ確認 | git branch      |
-| 作成     | git checkout -b |
+| 目的     | コマンド                        |
+| ------ | --------------------------- |
+| 状態確認   | `git status`                |
+| 差分確認   | `git diff`                  |
+| 追加     | `git add .`                 |
+| Commit | `git commit -m "メッセージ"`     |
+| Push   | `git push`                  |
+| 初回Push | `git push -u origin ブランチ名`  |
+| 取得     | `git pull`                  |
+| ブランチ確認 | `git branch`                |
+| ブランチ作成 | `git switch -c feature/機能名` |
+| ブランチ切替 | `git switch ブランチ名`          |
 
 ---
 
 # 基本開発フロー
 
-```
-git pull
+```text
+mainを最新化
  ↓
-ブランチ確認
+git pull origin main
  ↓
 featureブランチ作成
  ↓
-frontend npm install確認
+Docker起動
  ↓
-React開発
+Frontend起動
+ ↓
+開発
+ ↓
+動作確認
  ↓
 git status
  ↓
-git add .
+git add
  ↓
 git commit
  ↓
@@ -561,5 +1024,48 @@ git push
  ↓
 Pull Request
  ↓
-Merge
+レビュー
+ ↓
+mainへMerge
 ```
+
+---
+
+# 現在の開発方針
+
+現在は以下の構成で開発しています。
+
+```text
+Frontend
+React + Vite
+
+Backend
+FastAPI
+
+Database
+MySQL
+
+開発環境
+Docker
+
+API
+FastAPI + SQLAlchemy
+```
+
+現在は選手情報について、
+
+```text
+MySQL
+ ↓
+FastAPI
+ ↓
+GET /players
+ ↓
+React
+ ↓
+選手紹介ページ
+```
+
+というデータ取得の流れが実装されています。
+
+今後、選手情報だけでなく、試合結果や打撃成績などについても同様にAPI連携を進めていきます。
