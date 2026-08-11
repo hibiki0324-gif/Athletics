@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from app.database import engine
@@ -10,21 +11,25 @@ from models.player_position import PlayerPosition
 
 from routers.players import router as players_router
 
-
 app = FastAPI(title="Athletics API")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
     return {"message": "Athletics API is running"}
-
 
 @app.get("/health/db")
 def check_database():
     with engine.connect() as connection:
         result = connection.execute(text("SELECT 1"))
 
-    return {"database": result.scalar() == 1}
-
+        return {"database": result.scalar() == 1}
 
 app.include_router(players_router)
