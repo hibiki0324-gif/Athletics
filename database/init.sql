@@ -1,6 +1,11 @@
 -- Athletics Database
 -- Player related tables
 
+-- ============================================
+-- Connection character set
+-- ============================================
+SET NAMES utf8mb4;
+
 USE athletics;
 
 -- ============================================
