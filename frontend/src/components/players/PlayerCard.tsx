@@ -1,5 +1,6 @@
 import playerImg from '../../assets/no-image.png'
 import type { Player } from '../../types/player'
+import { Link } from "react-router-dom"
 
 type PlayerCardProps = {
     players: Player[]
@@ -28,9 +29,11 @@ function PlayerCard({ players }: PlayerCardProps) {
                             選手
                         </p>
 
-                        <p className="py-[5px]">
-                            {player.name}
-                        </p>
+                        <Link to={`/players/${player.id}`}>
+                            <p className="py-[5px]">
+                                {player.name}
+                            </p>
+                        </Link>
 
                         <p className="py-[5px]">
                             {player.throwing_hand}投{player.batting_hand}打
