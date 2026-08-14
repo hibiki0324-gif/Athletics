@@ -5,7 +5,6 @@ import Player from './pages/public/Player'
 import Result from "./pages/public/Result";
 import Login from "./pages/public/Login";
 import Stats from "./pages/public/Stats";
-import PlayerDetail from "./pages/public/PlayerDetail";
 
 function App() {
   return (
@@ -15,7 +14,6 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Top />} />
           <Route path="/players" element={<Player />} />
-          <Route path="/players/:id" element={<PlayerDetail />} />
           <Route path="/results" element={<Result />} />
           <Route path="/stats" element={<Stats />} />
         </Route>
