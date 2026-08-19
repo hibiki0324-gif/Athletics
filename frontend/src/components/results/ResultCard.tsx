@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 
 function ResultCard(){
     return(
@@ -19,7 +20,9 @@ function ResultCard(){
             </div>
             <div className="shrink-0 flex flex-col items-center gap-2">
                 <span className="min-w-[64px] text-center px-4 py-2 text-xs font-bold text-white bg-amber-500 rounded">WIN</span>
-                <a href="#" className="px-4 py-1 text-sm border border-gray-300 rounded-full transition-colors hover:bg-gray-50">試合詳細</a>
+                <Link to="/results/detail" className="px-4 py-1 text-sm border border-gray-300 rounded-full transition-colors hover:bg-gray-50">
+                    試合詳細
+                </Link>
             </div>
         </div>
     )
