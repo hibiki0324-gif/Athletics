@@ -6,6 +6,7 @@ import Result from "./pages/public/Result";
 import Login from "./pages/public/Login";
 import Stats from "./pages/public/Stats";
 import PlayerDetail from "./pages/public/PlayerDetail";
+import ResultDetail from "./pages/public/ResultDetail";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/players" element={<Player />} />
           <Route path="/players/:id" element={<PlayerDetail />} />
           <Route path="/results" element={<Result />} />
+          <Route path="/results/detail" element={<ResultDetail />} />
           <Route path="/stats" element={<Stats />} />
         </Route>
       </Routes>
