@@ -1,78 +1,156 @@
-# Athletics 開発環境 README
+# Athletics
 
-## プロジェクト概要
+草野球チーム「アスレチックス」のチームホームページ・管理システム開発プロジェクトです。
 
-草野球チーム「Athletics」のWebサイト開発プロジェクトです。
-
-Reactを利用したフロントエンド、FastAPIを利用したバックエンド、MySQLを利用したデータベースで構成されています。
-
-開発環境はDockerを利用して構築します。
+FrontendとBackendを分離し、Backend APIを介してMySQLのデータを取得・更新する構成で開発しています。
 
 ---
 
-# システム構成
+# 1. プロジェクト概要
 
-現在のシステム構成は以下です。
+本プロジェクトでは、草野球チームの以下の情報を管理・公開できるWebサイトを構築します。
 
-```text
-┌──────────────────────┐
-│      Browser         │
-│                      │
-│  React + Vite        │
-│  localhost:5173      │
-└──────────┬───────────┘
-           │ HTTP
-           │ API Request
-           ↓
-┌──────────────────────┐
-│      FastAPI         │
-│                      │
-│  localhost:8000      │
-└──────────┬───────────┘
-           │ SQLAlchemy
-           ↓
-┌──────────────────────┐
-│       MySQL          │
-│                      │
-│  localhost:3307      │
-└──────────────────────┘
-```
+- チーム情報
+- 選手情報
+- 選手の守備位置
+- 試合結果
+- 打撃成績
+- 試合ごとの先発・出場情報
+- 投手の勝敗・セーブ情報
+- シーズン情報
 
-フロントエンドから直接MySQLへ接続することはありません。
-
-基本的には、
+システムは以下の3層構成を基本とします。
 
 ```text
 React
   ↓
-FastAPI API
+FastAPI
   ↓
 SQLAlchemy
   ↓
 MySQL
 ```
 
-という流れでデータを取得・登録します。
+FrontendとBackendはそれぞれ独立して開発し、Backendが提供するREST APIを介してデータを連携します。
 
 ---
 
-# 開発環境
+# 2. 開発方針
 
-| 項目        | 内容                 |
-| --------- | ------------------ |
-| OS        | Mac                |
-| エディタ      | Visual Studio Code |
-| Frontend  | React + Vite       |
-| Backend   | FastAPI + Python   |
-| ORM       | SQLAlchemy         |
-| Database  | MySQL 8.0          |
-| APIドキュメント | Swagger UI         |
-| 開発環境      | Docker             |
-| パッケージ管理   | npm / pip          |
+本プロジェクトでは、実務に近い開発フローを意識して開発を行います。
+
+基本的な開発工程は以下です。
+
+```text
+要件定義
+ ↓
+基本設計
+ ↓
+DB設計
+ ↓
+Backend API設計・実装
+ ↓
+Frontend実装
+ ↓
+結合
+ ↓
+テスト
+ ↓
+公開
+```
+
+GitHubを使用してソースコードを管理し、機能単位でfeatureブランチを作成して開発します。
 
 ---
 
-# プロジェクト構成
+# 3. 技術構成
+
+| 項目 | 技術 |
+| --- | --- |
+| Frontend | React |
+| Frontend Build Tool | Vite |
+| Backend | FastAPI |
+| Backend Language | Python |
+| ORM | SQLAlchemy |
+| Database | MySQL 8.0 |
+| API Documentation | Swagger UI |
+| Container | Docker / Docker Compose |
+| Package Management | npm / pip |
+| Source Control | Git / GitHub |
+
+---
+
+# 4. 開発環境
+
+| 項目 | 内容 |
+| --- | --- |
+| OS | macOS |
+| Editor | Visual Studio Code |
+| Frontend | React + Vite |
+| Backend | FastAPI + Python |
+| ORM | SQLAlchemy |
+| Database | MySQL 8.0 |
+| API Documentation | Swagger UI |
+| Container | Docker |
+| Package Management | npm / pip |
+
+---
+
+# 5. システム構成
+
+開発環境では以下の構成で各サービスを起動します。
+
+```text
+┌─────────────────────────────┐
+│          Browser            │
+└─────────────┬───────────────┘
+              │
+              │ HTTP
+              ▼
+┌─────────────────────────────┐
+│      React / Vite           │
+│      localhost:5173         │
+└─────────────┬───────────────┘
+              │
+              │ REST API
+              ▼
+┌─────────────────────────────┐
+│      FastAPI Backend        │
+│      localhost:8000         │
+└─────────────┬───────────────┘
+              │
+              │ SQLAlchemy
+              ▼
+┌─────────────────────────────┐
+│         MySQL 8.0           │
+│      localhost:3307         │
+└─────────────────────────────┘
+
+        ┌─────────────────┐
+        │    phpMyAdmin   │
+        │ localhost:8081  │
+        └─────────────────┘
+```
+
+Frontendから直接MySQLへ接続することはありません。
+
+DatabaseへのアクセスはBackendが担当します。
+
+---
+
+# 6. 使用ポート
+
+| サービス | URL / Port | 用途 |
+| --- | --- | --- |
+| React / Vite | http://localhost:5173 | Frontend |
+| FastAPI | http://localhost:8000 | Backend API |
+| Swagger UI | http://localhost:8000/docs | API確認 |
+| MySQL | localhost:3307 | Database |
+| phpMyAdmin | http://localhost:8081 | Database管理 |
+
+---
+
+# 7. プロジェクト構成
 
 ```text
 Athletics
@@ -89,13 +167,28 @@ Athletics
 │   ├── app
 │   │   └── database.py
 │   ├── models
+│   │   ├── match.py
+│   │   ├── match_batting_stat.py
+│   │   ├── match_battery.py
+│   │   ├── match_inning.py
+│   │   ├── match_lineup_entry.py
+│   │   ├── match_pitching_decision.py
+│   │   ├── match_team.py
 │   │   ├── player.py
 │   │   ├── player_position.py
-│   │   └── position.py
+│   │   ├── position.py
+│   │   ├── season.py
+│   │   └── team.py
 │   ├── routers
-│   │   └── players.py
+│   │   ├── players.py
+│   │   ├── positions.py
+│   │   ├── seasons.py
+│   │   └── teams.py
 │   ├── schemas
-│   │   └── player.py
+│   │   ├── player.py
+│   │   ├── position.py
+│   │   ├── season.py
+│   │   └── team.py
 │   ├── main.py
 │   └── requirements.txt
 │
@@ -112,29 +205,81 @@ Athletics
 
 ---
 
-# 使用ポート
+# 8. Backendの責務
 
-| サービス       | URL / Port                 | 用途          |
-| ---------- | -------------------------- | ----------- |
-| React      | http://localhost:5173      | フロントエンド     |
-| FastAPI    | http://localhost:8000      | Backend API |
-| Swagger UI | http://localhost:8000/docs | API確認・操作    |
-| MySQL      | localhost:3307             | Database    |
-| phpMyAdmin | http://localhost:8081      | DB管理        |
+BackendはFrontendとDatabaseの間に位置し、以下を担当します。
+
+- REST APIの提供
+- リクエストデータのバリデーション
+- Databaseへのアクセス
+- データの取得・登録・更新
+- SQLAlchemyによるORM処理
+- APIレスポンスの生成
+
+データの流れは以下です。
+
+```text
+Frontend
+   ↓
+HTTP Request
+   ↓
+FastAPI Router
+   ↓
+Schema
+   ↓
+SQLAlchemy Model
+   ↓
+MySQL
+   ↓
+SQLAlchemy
+   ↓
+FastAPI
+   ↓
+JSON Response
+   ↓
+Frontend
+```
+
+Backend内部の詳細については、`backend/README.md`を参照してください。
 
 ---
 
-# 初回参加時のセットアップ
+# 9. Databaseの責務
 
-## 1. 必要ツール
+Databaseには、チーム・選手・試合・成績などの永続データを保存します。
 
-事前に以下をインストールしてください。
+現在の主なテーブルは以下です。
 
-* Git
-* Docker Desktop
-* Visual Studio Code
-* Node.js
-* npm
+| テーブル | 内容 |
+| --- | --- |
+| players | 選手情報 |
+| positions | 守備位置マスタ |
+| player_positions | 選手と守備位置の関連 |
+| seasons | シーズン情報 |
+| teams | チーム情報 |
+| matches | 試合情報 |
+| match_teams | 試合に参加するチーム |
+| match_innings | イニング別得点 |
+| match_lineup_entries | 試合の出場・守備情報 |
+| match_batting_stats | 試合ごとの打撃成績 |
+| match_pitching_decisions | 勝敗・セーブ情報 |
+| match_batteries | 試合中のバッテリー履歴 |
+
+詳細なDB設計については、`database/README.md`を参照してください。
+
+---
+
+# 10. 初回セットアップ
+
+## 10.1 必要ツール
+
+以下を事前にインストールしてください。
+
+- Git
+- Docker Desktop
+- Visual Studio Code
+- Node.js
+- npm
 
 確認コマンド：
 
@@ -148,7 +293,7 @@ docker compose version
 
 ---
 
-# 2. GitHubからclone
+# 11. GitHubからclone
 
 作業用ディレクトリへ移動します。
 
@@ -156,7 +301,7 @@ docker compose version
 cd ~/dev/web
 ```
 
-リポジトリを取得します。
+リポジトリをcloneします。
 
 ```bash
 git clone https://github.com/hibiki0324-gif/Athletics.git
@@ -168,43 +313,47 @@ git clone https://github.com/hibiki0324-gif/Athletics.git
 cd Athletics
 ```
 
-確認：
+現在位置を確認します。
 
 ```bash
 pwd
 ```
 
-以下のようになればOKです。
-
-```
-/Users/ユーザー名/dev/web/Athletics
-```
-
 ---
 
-# 3. mainブランチを最新化
+# 12. mainブランチを最新化
 
-clone直後はmainブランチになっていることを確認します。
+mainブランチへ切り替えます。
 
 ```bash
 git switch main
+```
+
+GitHub上の最新状態を取得します。
+
+```bash
 git pull origin main
 ```
 
-確認：
+状態を確認します。
 
 ```bash
 git status
+```
+
+ブランチを確認します。
+
+```bash
 git branch
 ```
 
-現在のブランチに `*` が表示されます。
+現在のブランチには `*` が表示されます。
 
 ---
 
-# 4. Docker起動
+# 13. Docker起動
 
-プロジェクト直下で実行します。
+プロジェクトルートで以下を実行します。
 
 ```bash
 docker compose up -d
@@ -216,7 +365,7 @@ docker compose up -d
 docker compose ps
 ```
 
-以下のようにBackend、DB、phpMyAdminなどが起動していればOKです。
+以下のサービスが起動していることを確認します。
 
 ```text
 athletics-backend
@@ -226,37 +375,36 @@ athletics-phpmyadmin
 
 ---
 
-# Dockerを起動する理由
+# 14. Dockerの役割
 
-Reactから選手情報などを取得する場合、Backend APIが必要です。
+Docker Composeでは以下のサービスを管理しています。
 
 ```text
-React
- ↓
-http://localhost:8000/players
- ↓
+backend
+ └─ FastAPI
+
+db
+ └─ MySQL 8.0
+
+phpmyadmin
+ └─ Database管理画面
+```
+
+BackendからDatabaseへはDocker内部ネットワークを利用して接続します。
+
+```text
 FastAPI
- ↓
+   ↓
+db
+   ↓
 MySQL
 ```
 
-そのため、Frontendだけを起動してもAPIからデータを取得することはできません。
-
-開発時は基本的に、
-
-```text
-Docker起動
-    ↓
-Backend + MySQL起動
-    ↓
-React起動
-```
-
-という順番で起動します。
+BackendのDatabase接続先は、Docker Compose上では`db`というサービス名を使用します。
 
 ---
 
-# 5. React環境セットアップ
+# 15. Frontendセットアップ
 
 Frontendディレクトリへ移動します。
 
@@ -270,66 +418,23 @@ cd frontend
 npm install
 ```
 
-`npm install`を実行すると、`package.json`に記載されたライブラリがインストールされます。
-
-```text
-package.json
-      ↓
-npm install
-      ↓
-node_modules作成
-```
+`package.json`および`package-lock.json`を基準として必要なパッケージがインストールされます。
 
 ---
 
-## node_modulesについて
+# 16. Frontend起動
 
-`node_modules`にはReactや各種ライブラリの実体が保存されます。
-
-```text
-frontend
-├── package.json
-├── package-lock.json
-└── node_modules
-```
-
-`node_modules`はGit管理対象外です。
-
-理由：
-
-* ファイル数が非常に多い
-* 環境ごとの差異がある
-* `npm install`で再生成可能
-
----
-
-# 6. React起動
-
-Frontendディレクトリで実行します。
+Frontendディレクトリで以下を実行します。
 
 ```bash
 npm run dev
 ```
 
-成功すると以下のように表示されます。
-
-```text
-Local: http://localhost:5173/
-```
-
-ブラウザで以下を開きます。
+起動後、以下へアクセスします。
 
 ```text
 http://localhost:5173
 ```
-
----
-
-## React起動時の注意
-
-`npm run dev`実行中のターミナルはReact開発サーバー専用になります。
-
-別作業を行う場合は、新しいターミナルを開いてください。
 
 停止する場合：
 
@@ -339,39 +444,39 @@ Ctrl + C
 
 ---
 
-# Backend APIの確認
+# 17. Backend起動
 
-BackendはFastAPIで構築されています。
-
-起動確認：
+BackendはDocker Composeから起動します。
 
 ```bash
-curl http://localhost:8000/
+docker compose up -d backend
 ```
 
-正常に起動していれば、以下のようなレスポンスが返ります。
+起動状態：
 
-```json
-{
-  "message": "Athletics API is running"
-}
+```bash
+docker compose ps
+```
+
+Backendは以下でアクセスできます。
+
+```text
+http://localhost:8000
 ```
 
 ---
 
-# Swagger UI
+# 18. Backend API確認
 
-FastAPIにはSwagger UIが用意されています。
-
-ブラウザで以下を開きます。
+APIの確認にはSwagger UIを使用できます。
 
 ```text
 http://localhost:8000/docs
 ```
 
-Swagger UIでは、現在Backendに実装されているAPIを確認できます。
+FastAPIが提供するAPI一覧を確認できます。
 
-また、ブラウザ上からAPIを実際に実行することもできます。
+Swagger UIでは、ブラウザ上からAPIを実行できます。
 
 ```text
 GET
@@ -379,44 +484,74 @@ POST
 PUT
 ```
 
-などのAPIを選択し、
-
-```text
-Try it out
-```
-
-を押すことでリクエストを送信できます。
+などのAPIを選択し、`Try it out`からリクエストを送信できます。
 
 ---
 
-# 選手API
+# 19. API一覧
 
-現在、選手APIとして以下を実装しています。
+現在実装されている主なAPIは以下です。
 
-| Method | Endpoint               | 内容     |
-| ------ | ---------------------- | ------ |
-| GET    | `/players`             | 選手一覧取得 |
-| GET    | `/players/{player_id}` | 選手詳細取得 |
-| POST   | `/players`             | 選手登録   |
-| PUT    | `/players/{player_id}` | 選手更新   |
+## Players
+
+| Method | Endpoint | 内容 |
+| --- | --- | --- |
+| GET | `/players` | 選手一覧取得 |
+| GET | `/players/{player_id}` | 選手詳細取得 |
+| POST | `/players` | 選手登録 |
+| PUT | `/players/{player_id}` | 選手更新 |
+| GET | `/players/{player_id}/positions` | 選手の守備位置取得 |
+| PUT | `/players/{player_id}/positions` | 選手の守備位置更新 |
+
+## Positions
+
+| Method | Endpoint | 内容 |
+| --- | --- | --- |
+| GET | `/positions` | 守備位置一覧取得 |
+
+## Seasons
+
+| Method | Endpoint | 内容 |
+| --- | --- | --- |
+| GET | `/seasons` | シーズン一覧取得 |
+
+## Teams
+
+| Method | Endpoint | 内容 |
+| --- | --- | --- |
+| GET | `/teams` | チーム一覧取得 |
+
+## Matches
+
+| Method | Endpoint | 内容 |
+| --- | --- | --- |
+| POST | `/matches` | 試合登録 |
+
+今後、試合結果・打撃成績・出場選手などのAPIを拡張していきます。
 
 ---
 
-# 選手一覧を取得する
+# 20. APIデータ連携
 
-以下のURLへアクセスします。
+FrontendとBackendのデータ連携はREST APIを使用します。
+
+例えば選手一覧の場合：
 
 ```text
-http://localhost:8000/players
+React
+ ↓
+GET /players
+ ↓
+FastAPI
+ ↓
+MySQL
+ ↓
+FastAPI
+ ↓
+JSON
+ ↓
+React
 ```
-
-またはターミナルから、
-
-```bash
-curl http://localhost:8000/players
-```
-
-実行します。
 
 レスポンス例：
 
@@ -430,221 +565,115 @@ curl http://localhost:8000/players
     "throwing_hand": "右",
     "profile_image": null,
     "is_active": true
-  },
-  {
-    "id": 2,
-    "name": "岡嶋 竜也",
-    "uniform_number": 6,
-    "batting_hand": "右",
-    "throwing_hand": "右",
-    "profile_image": null,
-    "is_active": true
   }
 ]
 ```
 
 ---
 
-# Swagger UIから選手を登録する
+# 21. 選手情報
 
-開発中にテストデータを追加したい場合は、Swagger UIを利用できます。
+選手テーブルでは以下の情報を管理します。
 
-## 1. Swagger UIを開く
+| 項目 | 内容 |
+| --- | --- |
+| id | 選手ID |
+| name | 選手名 |
+| uniform_number | 背番号 |
+| batting_hand | 打席 |
+| throwing_hand | 利き腕 |
+| profile_image | プロフィール画像 |
+| is_active | 現役選手かどうか |
 
-```text
-http://localhost:8000/docs
-```
+選手の守備位置は`player_positions`を介して管理します。
 
----
-
-## 2. POST /playersを開く
-
-Swagger UIで、
-
-```text
-POST /players
-```
-
-を探します。
-
----
-
-## 3. Try it outを押す
-
-右側の、
+そのため、1人の選手が複数の守備位置を持つことができます。
 
 ```text
-Try it out
+Player
+  │
+  └── PlayerPosition
+        ├── 投手
+        ├── 一塁手
+        └── 外野手
 ```
 
-を押します。
-
 ---
 
-## 4. JSONを入力
+# 22. 試合情報
 
-例えば、
-
-```json
-{
-  "name": "テスト 太郎",
-  "uniform_number": 10,
-  "batting_hand": "右",
-  "throwing_hand": "右",
-  "profile_image": null
-}
-```
-
-を入力します。
-
----
-
-## 5. Executeを押す
-
-`Execute`を押すとAPIへリクエストが送信されます。
-
-正常に登録されると、HTTPステータス `201` が返ります。
-
----
-
-# 選手登録時の注意
-
-現在、背番号は重複できません。
-
-例えば、すでに、
+試合情報は以下のような構造で管理します。
 
 ```text
-背番号 10
+Season
+  │
+  └── Match
+        │
+        ├── MatchTeam
+        │     ├── Team
+        │     ├── MatchInning
+        │     ├── MatchLineupEntry
+        │     ├── MatchBattingStats
+        │     └── MatchBattery
+        │
+        └── MatchPitchingDecision
 ```
 
-の選手が登録されている状態で、もう一度10番を登録すると、
+これにより、単純な試合結果だけではなく、
 
-```json
-{
-  "detail": "その背番号は既に使用されています"
-}
-```
+- イニング別得点
+- 試合出場選手
+- 守備位置
+- 打撃成績
+- バッテリー履歴
+- 勝敗・セーブ
 
-というエラーになります。
-
-テストデータを追加するときは、既存選手と異なる背番号を使用してください。
+などを試合単位で管理できる構成としています。
 
 ---
 
-# DBを直接確認する
+# 23. DB初期構築
 
-MySQLのデータを確認したい場合は、phpMyAdminまたはMySQLコマンドを利用できます。
-
-## phpMyAdmin
-
-ブラウザで以下を開きます。
+Databaseの初期構築SQLは以下にあります。
 
 ```text
-http://localhost:8081
+database/init.sql
 ```
 
-ログイン情報は `docker-compose.yml` の設定を確認してください。
+`init.sql`にはテーブル作成SQLおよび初期マスタ・初期データが定義されています。
+
+初期データとして、
+
+- 守備位置
+- 2026年シーズン
+- アスレチックス
+- 初期選手
+
+などを登録しています。
 
 ---
 
-## MySQLへコマンドラインから接続
+# 24. init.sqlの実行タイミング
 
-Dockerコンテナ内のMySQLへ接続できます。
+`init.sql`はMySQLのデータディレクトリが初期化される際に実行されます。
 
-```bash
-docker compose exec db mysql --default-character-set=utf8mb4 -u root -p athletics
-```
-
-パスワード入力後、MySQLへ接続できます。
-
----
-
-## playersテーブルを確認
-
-MySQLへ接続後、
-
-```sql
-SELECT * FROM players;
-```
-
-を実行します。
-
-特定の選手を確認する場合：
-
-```sql
-SELECT * FROM players WHERE id = 1;
-```
-
----
-
-# テストデータを削除する
-
-テストで登録した選手を削除したい場合は、MySQLから削除できます。
-
-例えばIDが4の場合：
-
-```bash
-docker compose exec db mysql --default-character-set=utf8mb4 -u root -p athletics -e "DELETE FROM players WHERE id=4;"
-```
-
-注意：
-
-この操作はDBのデータを直接削除します。
-
-本番環境では使用せず、開発環境でのみ使用してください。
-
----
-
-# init.sqlについて
-
-`database/init.sql`には、DBを初期構築するときに使用するSQLが記載されています。
-
-例えば、以下のような初期データが登録されています。
+Docker Composeでは以下のようにマウントしています。
 
 ```text
-今村 響
-岡嶋 竜也
-```
-
-そのため、初めてDocker環境を構築する開発者は、初期状態としてこれらの選手データを利用できます。
-
----
-
-## init.sqlが実行されるタイミング
-
-`init.sql`は、MySQLのデータベースが初期化されるタイミングで実行されます。
-
-重要なのは、
-
-```text
-docker compose up
-```
-
-を実行するたびに `init.sql` が実行されるわけではないということです。
-
-既にMySQLのデータボリュームが存在する場合、基本的には既存のDBがそのまま使用されます。
-
-そのため、
-
-```text
-GitHubからmainをpull
+./database/init.sql
         ↓
-docker compose up -d
+/docker-entrypoint-initdb.d/init.sql
 ```
 
-を行っても、既存DBのデータが自動的に初期化されるわけではありません。
+既にMySQLのデータボリュームが存在する場合、`docker compose up`を実行するだけでは`init.sql`は再実行されません。
+
+そのため、通常の開発では既存DBのデータが維持されます。
 
 ---
 
-# DBを完全に初期化したい場合
+# 25. DBを初期化する場合
 
-開発環境でDBを作り直したい場合は、Dockerのボリュームを削除してから起動します。
-
-注意：
-
-**この操作を行うと、現在のDocker上のDBデータが削除されます。**
-
-実行前に必要なデータがないことを確認してください。
+開発環境のDatabaseを完全に作り直す場合：
 
 ```bash
 docker compose down -v
@@ -658,104 +687,108 @@ docker compose up -d
 
 を実行します。
 
-これにより新しいMySQLデータベースが作成され、`database/init.sql`による初期構築が行われます。
+注意：
+
+```bash
+docker compose down -v
+```
+
+を実行するとDocker Volumeが削除されるため、現在保存されているDatabaseのデータも削除されます。
+
+必要なデータが存在する場合は、事前にバックアップしてください。
 
 ---
 
-# CORSについて
+# 26. phpMyAdmin
 
-FrontendとBackendは異なるポートで動作します。
+DatabaseをGUIから確認する場合はphpMyAdminを使用できます。
 
 ```text
-Frontend
-http://localhost:5173
-
-Backend
-http://localhost:8000
+http://localhost:8081
 ```
 
-そのため、Backend側でCORSを設定しています。
+接続先はDocker Composeの`db`サービスです。
 
-現在は開発環境として、
+ログイン情報は`docker-compose.yml`で管理しています。
+
+---
+
+# 27. MySQLへ接続
+
+Dockerコンテナ内のMySQLへ接続する場合：
+
+```bash
+docker compose exec db mysql --default-character-set=utf8mb4 -u root -p athletics
+```
+
+Databaseへ接続後：
+
+```sql
+SHOW TABLES;
+```
+
+選手情報を確認：
+
+```sql
+SELECT * FROM players;
+```
+
+試合情報を確認：
+
+```sql
+SELECT * FROM matches;
+```
+
+---
+
+# 28. Dockerコマンド
+
+| 目的 | コマンド |
+| --- | --- |
+| 起動 | `docker compose up -d` |
+| 停止 | `docker compose down` |
+| 停止＋Volume削除 | `docker compose down -v` |
+| 状態確認 | `docker compose ps` |
+| Backendログ | `docker compose logs backend` |
+| DBログ | `docker compose logs db` |
+| Backend再起動 | `docker compose restart backend` |
+| 全サービスログ | `docker compose logs` |
+
+---
+
+# 29. Git運用
+
+本プロジェクトでは、mainブランチを安定版として扱います。
+
+基本的にmainへ直接変更を加えず、featureブランチを作成して開発します。
+
+基本フロー：
 
 ```text
-http://localhost:5173
-```
-
-からのアクセスを許可しています。
-
----
-
-# 毎日の作業開始手順
-
-## 1. プロジェクトへ移動
-
-```bash
-cd ~/dev/web/Athletics
-```
-
----
-
-## 2. mainを最新化
-
-```bash
-git switch main
-git pull origin main
+main
+ ↓
+featureブランチ作成
+ ↓
+開発
+ ↓
+動作確認
+ ↓
+commit
+ ↓
+push
+ ↓
+Pull Request
+ ↓
+レビュー
+ ↓
+mainへMerge
 ```
 
 ---
 
-## 3. 作業ブランチを作成
+# 30. ブランチ命名
 
-作業内容ごとにfeatureブランチを作成します。
-
-```bash
-git switch -c feature/機能名
-```
-
-例：
-
-```bash
-git switch -c feature/player-management
-```
-
----
-
-## 4. Docker起動
-
-```bash
-docker compose up -d
-```
-
----
-
-## 5. Frontend起動
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-`npm install`は依存関係に変更がない場合、毎回実行する必要はありません。
-
----
-
-# ブランチ運用
-
-## mainブランチ
-
-`main`は安定版として扱います。
-
-基本的に直接編集しません。
-
-作業するときは必ずfeatureブランチを作成します。
-
----
-
-# ブランチ命名ルール
-
-形式：
+基本形式：
 
 ```text
 feature/機能名
@@ -773,118 +806,139 @@ feature/batting-stats
 feature/update-readme-api
 ```
 
+修正の場合は必要に応じて、
+
+```text
+fix/修正内容
+```
+
+とします。
+
+例：
+
+```text
+fix/player-api
+fix/header-scroll
+```
+
 ---
 
-# 開発中のGit操作
+# 31. 作業開始手順
 
-## 状態確認
+毎日の作業開始時は以下を基本とします。
+
+## 1. プロジェクトへ移動
+
+```bash
+cd ~/dev/web/Athletics
+```
+
+## 2. mainを最新化
+
+```bash
+git switch main
+git pull origin main
+```
+
+## 3. featureブランチ作成
+
+```bash
+git switch -c feature/機能名
+```
+
+## 4. Docker起動
+
+```bash
+docker compose up -d
+```
+
+## 5. Frontend起動
+
+```bash
+cd frontend
+npm run dev
+```
+
+---
+
+# 32. 作業中のGit操作
+
+状態確認：
 
 ```bash
 git status
 ```
 
----
-
-## ブランチ確認
-
-```bash
-git branch
-```
-
-現在のブランチには `*` が表示されます。
-
----
-
-## 差分確認
+差分確認：
 
 ```bash
 git diff
 ```
 
----
-
-## 変更追加
+変更をステージング：
 
 ```bash
 git add .
 ```
 
----
-
-## Commit
+Commit：
 
 ```bash
 git commit -m "変更内容"
 ```
 
-例：
-
-```bash
-git commit -m "feat: add player management"
-```
-
----
-
-## Push
-
-初回：
-
-```bash
-git push -u origin feature/ブランチ名
-```
-
-2回目以降：
+Push：
 
 ```bash
 git push
 ```
 
----
+初回Pushの場合：
 
-# Pull Requestについて
-
-Pull Request（PR）とは、
-
-「featureブランチの変更をmainへ取り込む申請」です。
-
-基本的な開発フロー：
-
-```text
-main
- ↓
-featureブランチ作成
- ↓
-開発
- ↓
-動作確認
- ↓
-commit
- ↓
-GitHubへpush
- ↓
-Pull Request作成
- ↓
-レビュー
- ↓
-mainへMerge
+```bash
+git push -u origin feature/ブランチ名
 ```
 
 ---
 
-# Pull Request確認項目
+# 33. Pull Request
 
-レビュー時は以下を確認します。
+Pull Request（PR）は、featureブランチの変更をmainへ取り込むために使用します。
 
-* 動作確認済みか
-* 不要なファイルがないか
-* 命名が適切か
-* 他機能への影響がないか
-* APIの変更がある場合、既存機能に影響がないか
-* DBの変更がある場合、`init.sql`なども更新されているか
+基本的な流れ：
+
+```text
+featureブランチ
+      ↓
+    Push
+      ↓
+Pull Request作成
+      ↓
+    Review
+      ↓
+    Merge
+      ↓
+     main
+```
 
 ---
 
-# 作業終了手順
+# 34. Pull Request確認項目
+
+PRを作成した際は、以下を確認します。
+
+- 実装内容が目的に合っているか
+- 動作確認が完了しているか
+- 不要なファイルが含まれていないか
+- 命名が適切か
+- 既存機能へ影響がないか
+- API変更がある場合、既存APIへの影響がないか
+- DB変更がある場合、`database/init.sql`が更新されているか
+- READMEなどのドキュメント更新が必要か
+
+---
+
+# 35. 作業終了手順
 
 ## 1. 状態確認
 
@@ -892,33 +946,20 @@ mainへMerge
 git status
 ```
 
----
-
 ## 2. 差分確認
 
 ```bash
 git diff
 ```
 
----
-
-## 3. 変更追加
+## 3. Commit
 
 ```bash
 git add .
+git commit -m "変更内容"
 ```
 
----
-
-## 4. Commit
-
-```bash
-git commit -m "作業内容"
-```
-
----
-
-## 5. Push
+## 4. Push
 
 ```bash
 git push
@@ -926,136 +967,32 @@ git push
 
 ---
 
-# Dockerコマンド一覧
+# 36. Gitコマンド一覧
 
-| 目的           | コマンド                             |
-| ------------ | -------------------------------- |
-| 起動           | `docker compose up -d`           |
-| 停止           | `docker compose down`            |
-| 停止＋DBボリューム削除 | `docker compose down -v`         |
-| 状態確認         | `docker compose ps`              |
-| Backendログ確認  | `docker compose logs backend`    |
-| DBログ確認       | `docker compose logs db`         |
-| Backend再起動   | `docker compose restart backend` |
-
----
-
-# API確認コマンド
-
-## Backendの起動確認
-
-```bash
-curl http://localhost:8000/
-```
-
----
-
-## 選手一覧取得
-
-```bash
-curl http://localhost:8000/players
-```
-
----
-
-## 選手詳細取得
-
-```bash
-curl http://localhost:8000/players/1
-```
-
-存在しないIDを指定した場合は、
-
-```bash
-curl http://localhost:8000/players/999
-```
-
-以下のような404エラーになります。
-
-```json
-{
-  "detail": "選手が見つかりません"
-}
-```
-
----
-
-# Gitコマンド一覧
-
-| 目的     | コマンド                        |
-| ------ | --------------------------- |
-| 状態確認   | `git status`                |
-| 差分確認   | `git diff`                  |
-| 追加     | `git add .`                 |
-| Commit | `git commit -m "メッセージ"`     |
-| Push   | `git push`                  |
-| 初回Push | `git push -u origin ブランチ名`  |
-| 取得     | `git pull`                  |
-| ブランチ確認 | `git branch`                |
+| 目的 | コマンド |
+| --- | --- |
+| 状態確認 | `git status` |
+| 差分確認 | `git diff` |
+| 追加 | `git add .` |
+| Commit | `git commit -m "メッセージ"` |
+| Push | `git push` |
+| 初回Push | `git push -u origin ブランチ名` |
+| Pull | `git pull` |
+| main取得 | `git pull origin main` |
+| ブランチ確認 | `git branch` |
 | ブランチ作成 | `git switch -c feature/機能名` |
-| ブランチ切替 | `git switch ブランチ名`          |
+| ブランチ切替 | `git switch ブランチ名` |
 
 ---
 
-# 基本開発フロー
+# 37. 開発時の基本的なデータフロー
 
-```text
-mainを最新化
- ↓
-git pull origin main
- ↓
-featureブランチ作成
- ↓
-Docker起動
- ↓
-Frontend起動
- ↓
-開発
- ↓
-動作確認
- ↓
-git status
- ↓
-git add
- ↓
-git commit
- ↓
-git push
- ↓
-Pull Request
- ↓
-レビュー
- ↓
-mainへMerge
-```
-
----
-
-# 現在の開発方針
-
-現在は以下の構成で開発しています。
-
-```text
-Frontend
-React + Vite
-
-Backend
-FastAPI
-
-Database
-MySQL
-
-開発環境
-Docker
-
-API
-FastAPI + SQLAlchemy
-```
-
-現在は選手情報について、
+## 選手情報
 
 ```text
 MySQL
+ ↓
+SQLAlchemy
  ↓
 FastAPI
  ↓
@@ -1063,9 +1000,286 @@ GET /players
  ↓
 React
  ↓
-選手紹介ページ
+選手一覧・選手紹介
 ```
 
-というデータ取得の流れが実装されています。
+---
 
-今後、選手情報だけでなく、試合結果や打撃成績などについても同様にAPI連携を進めていきます。
+## 試合情報
+
+```text
+MySQL
+ ↓
+SQLAlchemy
+ ↓
+FastAPI
+ ↓
+試合API
+ ↓
+React
+ ↓
+試合結果ページ
+```
+
+---
+
+## 打撃成績
+
+```text
+MySQL
+ ↓
+SQLAlchemy
+ ↓
+FastAPI
+ ↓
+打撃成績API
+ ↓
+React
+ ↓
+打撃成績ページ
+```
+
+---
+
+# 38. 現在の実装状況
+
+現在Backendでは、基本的なマスタ情報および選手情報についてAPI連携を実装しています。
+
+## 実装済み
+
+- FastAPI起動
+- MySQL接続
+- SQLAlchemyによるORM
+- Swagger UI
+- 選手一覧取得
+- 選手詳細取得
+- 選手登録
+- 選手更新
+- 選手の守備位置取得
+- 選手の守備位置更新
+- 守備位置一覧取得
+- シーズン一覧取得
+- チーム一覧取得
+- 試合登録
+
+---
+
+# 39. 今後の実装予定
+
+今後は以下の機能を段階的に実装します。
+
+## 試合関連
+
+- 試合一覧取得
+- 試合詳細取得
+- 試合結果更新
+- イニング別得点管理
+- 対戦チーム管理
+
+## 出場選手関連
+
+- スターティングメンバー登録
+- 選手交代
+- 守備位置変更
+- 出場履歴管理
+
+## 打撃成績関連
+
+- 試合ごとの打撃成績登録
+- 打撃成績更新
+- シーズン成績集計
+- 選手別成績取得
+
+## 投手関連
+
+- 勝利投手
+- 敗戦投手
+- セーブ投手
+- バッテリー履歴
+
+---
+
+# 40. ドキュメント構成
+
+本プロジェクトでは、ドキュメントを役割ごとに分離して管理します。
+
+```text
+README.md
+│
+├── プロジェクト概要
+├── 開発環境
+├── セットアップ
+├── Git運用
+└── 全体開発方針
+```
+
+Databaseについては、
+
+```text
+database/README.md
+```
+
+で以下を管理します。
+
+```text
+database/README.md
+│
+├── DB概要
+├── テーブル一覧
+├── ER構造
+├── 各テーブル仕様
+├── 主キー・外部キー
+├── インデックス
+├── 初期データ
+└── DB運用ルール
+```
+
+Backendについては、
+
+```text
+backend/README.md
+```
+
+で以下を管理します。
+
+```text
+backend/README.md
+│
+├── Backend概要
+├── FastAPI構成
+├── ディレクトリ構成
+├── Model
+├── Schema
+├── Router
+├── API仕様
+├── Database接続
+└── 開発ルール
+```
+
+---
+
+# 41. ドキュメント作成の方針
+
+各READMEは、それぞれの担当範囲に応じて詳細を記載します。
+
+```text
+README.md
+   ↓
+プロジェクト全体
+
+database/README.md
+   ↓
+Database・テーブル設計
+
+backend/README.md
+   ↓
+FastAPI・API・ORM
+
+frontend/README.md
+   ↓
+React・画面・コンポーネント
+```
+
+同じ内容を複数のREADMEに重複して記載するのではなく、それぞれの責務に応じて情報を分離します。
+
+---
+
+# 42. 開発環境と本番環境
+
+現在はlocalhost上で開発を行います。
+
+```text
+開発環境
+
+Mac
+ ↓
+Docker
+ ├── FastAPI
+ ├── MySQL
+ └── phpMyAdmin
+
+Mac
+ ↓
+React / Vite
+```
+
+開発完了後は、VPSなどのサーバー環境へ配置して公開する予定です。
+
+本番環境の詳細な構成については、公開環境構築時に別途設計します。
+
+---
+
+# 43. 注意事項
+
+## mainブランチへ直接Pushしない
+
+原則としてfeatureブランチで作業してください。
+
+---
+
+## DBを不用意に初期化しない
+
+以下のコマンドはDB Volumeを削除します。
+
+```bash
+docker compose down -v
+```
+
+開発環境のデータが削除されるため、使用する際は注意してください。
+
+---
+
+## node_modulesをCommitしない
+
+`node_modules`はGit管理対象外です。
+
+必要な場合は、
+
+```bash
+npm install
+```
+
+で再生成してください。
+
+---
+
+## 環境依存情報をCommitしない
+
+パスワードや秘密情報などの機密情報をGitHubへCommitしないでください。
+
+---
+
+# 44. 現在のゴール
+
+本プロジェクトの最終的な構成は以下を目指します。
+
+```text
+                Browser
+                   │
+                   ▼
+          ┌─────────────────┐
+          │ React / Vite    │
+          └────────┬────────┘
+                   │
+                   │ REST API
+                   ▼
+          ┌─────────────────┐
+          │ FastAPI         │
+          │                 │
+          │ Router          │
+          │ Schema          │
+          │ SQLAlchemy      │
+          └────────┬────────┘
+                   │
+                   ▼
+          ┌─────────────────┐
+          │ MySQL 8.0       │
+          │                 │
+          │ Players         │
+          │ Teams           │
+          │ Matches         │
+          │ Statistics      │
+          └─────────────────┘
+```
+
+最終的には、チームの選手情報・試合結果・成績などをDatabaseで一元管理し、FastAPIを通じてFrontendへ提供するWebシステムを構築します。
