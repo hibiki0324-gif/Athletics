@@ -10,7 +10,6 @@ function ResultDetailCard(){
                 <span>&gt;</span>
                 <span className="text-slate-900 font-medium">試合結果詳細</span>
             </div>
-
             <div className="bg-white border border-gray-300 shadow-sm py-2 px-6">
                 <span className="inline-block px-3 py-1 text-base font-medium text-slate-900 border border-gray-300 rounded-full">
                     2026年シーズン
@@ -21,7 +20,6 @@ function ResultDetailCard(){
                     <span className="ml-3 text-base font-medium text-gray-600">14:00試合開始</span>
                 </p>
                 <p className="mt-1 text-base text-gray-500">雁の巣レクリエーションセンター</p>
-
                 <div className="flex items-center justify-center gap-10 mt-6 pt-6 pb-10">
                     <div className="text-center">
                         <p className="text-xl font-bold text-slate-900">アスレチックス</p>
