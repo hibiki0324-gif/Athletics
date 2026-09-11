@@ -18,7 +18,7 @@ function App() {
           <Route path="/players" element={<Player />} />
           <Route path="/players/:id" element={<PlayerDetail />} />
           <Route path="/results" element={<Result />} />
-          <Route path="/results/detail" element={<ResultDetail />} />
+          <Route path="/results/:id" element={<ResultDetail />} />
           <Route path="/stats" element={<Stats />} />
         </Route>
       </Routes>

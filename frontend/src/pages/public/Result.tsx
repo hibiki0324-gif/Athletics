@@ -7,8 +7,6 @@ import Title from "../../components/results/Title";
 
 function Result(){
 
-    {/* fetchでAPIを叩いて、レスポンスをJSONで受け取る */}
-
     return(
         <div className="flex flex-col gap-8">
             <Title />
