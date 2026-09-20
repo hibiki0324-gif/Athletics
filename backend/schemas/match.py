@@ -29,16 +29,32 @@ class MatchResponse(BaseModel):
 
 class MatchDetailResponse(BaseModel):
     id: int
-
     season: dict
-
     match_date: date
     start_time: time | None
     venue: str | None
-
     teams: list[dict]
     innings: list[dict]
     lineup: list[dict]
     batting_stats: list[dict]
     batteries: list[dict]
     pitching_decisions: list[dict]
+    
+
+class MatchTeamSummary(BaseModel):
+    id: int
+    team_id: int
+    team_name: str
+    is_home: bool
+    final_score: int
+
+
+class MatchListResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    season_id: int
+    match_date: date
+    start_time: time | None
+    venue: str | None
+    teams: list[MatchTeamSummary]
