@@ -10,7 +10,7 @@ function ResultDetail(){
     const [isLoading,setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        const fetchMatch = async()=>{
+        const fetchMatchDetail = async()=>{
             try{
                 const response = await fetch(`http://localhost:8000/matches/${id}`);
 
@@ -28,7 +28,7 @@ function ResultDetail(){
                 setIsLoading(false);
             }
         }
-        fetchMatch();
+        fetchMatchDetail();
     },[id])
     
     return(
