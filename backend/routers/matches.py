@@ -21,6 +21,7 @@ from schemas.match import (
     MatchUpdate,
     MatchResponse,
     MatchDetailResponse,
+    MatchListResponse, 
 )
 
 
@@ -41,19 +42,59 @@ def get_db():
 
 @router.get(
     "",
-    response_model=list[MatchResponse],
+    response_model=list[MatchListResponse],
 )
-def get_matches(
-    db: Session = Depends(get_db),
-):
-    return (
+def get_matches(db: Session = Depends(get_db)):
+    matches = (
         db.query(Match)
-        .order_by(
-            Match.match_date.desc(),
-            Match.id.desc(),
-        )
+        .order_by(Match.match_date.desc(), Match.id.desc())
         .all()
     )
+
+    result = []
+
+    for match in matches:
+        match_teams = (
+            db.query(
+                MatchTeam,
+                Team.name,
+            )
+            .join(
+                Team,
+                MatchTeam.team_id == Team.id,
+            )
+            .filter(
+                MatchTeam.match_id == match.id
+            )
+            .order_by(
+                MatchTeam.is_home.desc()
+            )
+            .all()
+        )
+
+        teams = [
+            {
+                "id": match_team.id,
+                "team_id": match_team.team_id,
+                "team_name": team_name,
+                "is_home": match_team.is_home,
+                "final_score": match_team.final_score,
+            }
+            for match_team, team_name in match_teams
+        ]
+
+        result.append(
+            {
+                "id": match.id,
+                "season_id": match.season_id,
+                "match_date": match.match_date,
+                "start_time": match.start_time,
+                "venue": match.venue,
+                "teams": teams,
+            }
+        )
+
+    return result
 
 
 @router.get(

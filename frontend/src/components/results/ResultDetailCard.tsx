@@ -24,12 +24,13 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
     const savePitcher = result?.pitching_decisions.find((save)=>save.decision === "SAVE");
     const homeBattery = result?.batteries.find((home)=>home.match_team_id === homeTeam?.id);
     const awayBattery = result?.batteries.find((away)=>away.match_team_id === awayTeam?.id);
-    const homeLineup = result?.lineup.filter((entry)=>entry.match_team_id === homeTeam?.id);
+    const myTeam = result?.teams.find((team)=>team.team_name === "アスレチックス");
+    const myLineup = result?.lineup.filter((entry)=>entry.match_team_id === myTeam?.id);
 
     //打撃チーム成績計算系
-    const homeBattingStats = result?.batting_stats.filter((s)=>s.match_team_id === homeTeam?.id);
+    const myBattingStats = result?.batting_stats.filter((s)=>s.match_team_id === myTeam?.id);
     //各項目合計値計算
-    const homeTotal = homeBattingStats?.reduce(
+    const myTotal = myBattingStats?.reduce(
         (acc, s) => ({
             at_bats: acc.at_bats + s.at_bats,
             hits: acc.hits + s.hits,
@@ -44,8 +45,8 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
         { at_bats: 0, hits: 0, home_runs: 0, runs_batted_in: 0, doubles: 0, triples: 0, walks: 0, sacrifice_flies: 0, strikeouts: 0 }
     );
     //チーム打率計算
-    const homeTotalAverage =
-        homeTotal && homeTotal.at_bats > 0 ? (homeTotal.hits / homeTotal.at_bats).toFixed(3).replace(/^0/, "") : "-";
+    const myTotalAverage =
+        myTotal && myTotal.at_bats > 0 ? (myTotal.hits / myTotal.at_bats).toFixed(3).replace(/^0/, "") : "-";
 
     return(
         <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto py-6 px-6">
@@ -209,7 +210,7 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
                             </tr>
                         </thead>
                         <tbody className="border-b border-gray-100 text-base text-slate-900">
-                                {homeLineup?.map((entry) => {
+                                {myLineup?.map((entry) => {
                                     const stat = result?.batting_stats.find((s) => s.player_id === entry.player_id);
                                     const average = 
                                         stat && stat.at_bats > 0 ? (stat.hits / stat.at_bats).toFixed(3).replace(/^0/, ""): "-";
@@ -233,16 +234,16 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
                                 })}
                             <tr className="bg-gray-50 font-bold text-lg text-slate-900">
                                 <td colSpan={3} className="px-3 py-3">TOTAL</td>
-                                <td className="px-3 py-3 text-right">{homeTotal?.at_bats}</td>
-                                <td className="px-3 py-3 text-right">{homeTotal?.hits}</td>
-                                <td className="px-3 py-3 text-right">{homeTotal?.home_runs}</td>
-                                <td className="px-3 py-3 text-right">{homeTotal?.runs_batted_in}</td>
-                                <td className="px-3 py-3 text-right">{homeTotal?.doubles}</td>
-                                <td className="px-3 py-3 text-right">{homeTotal?.triples}</td>
-                                <td className="px-3 py-3 text-right">{homeTotal?.walks}</td>
-                                <td className="px-3 py-3 text-right">{homeTotal?.sacrifice_flies}</td>
-                                <td className="px-3 py-3 text-right">{homeTotal?.strikeouts}</td>
-                                <td className="px-3 py-3 text-right">{homeTotalAverage}</td>
+                                <td className="px-3 py-3 text-right">{myTotal?.at_bats}</td>
+                                <td className="px-3 py-3 text-right">{myTotal?.hits}</td>
+                                <td className="px-3 py-3 text-right">{myTotal?.home_runs}</td>
+                                <td className="px-3 py-3 text-right">{myTotal?.runs_batted_in}</td>
+                                <td className="px-3 py-3 text-right">{myTotal?.doubles}</td>
+                                <td className="px-3 py-3 text-right">{myTotal?.triples}</td>
+                                <td className="px-3 py-3 text-right">{myTotal?.walks}</td>
+                                <td className="px-3 py-3 text-right">{myTotal?.sacrifice_flies}</td>
+                                <td className="px-3 py-3 text-right">{myTotal?.strikeouts}</td>
+                                <td className="px-3 py-3 text-right">{myTotalAverage}</td>
                             </tr>
                         </tbody>
                     </table>

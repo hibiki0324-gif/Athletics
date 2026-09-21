@@ -96,3 +96,12 @@ export type MatchDetail = {
     batteries: Battery[];
     pitching_decisions: PitchingDecision[];
 };
+
+export type MatchSummary = {
+    id: number;
+    season_id: number;
+    match_date: string;
+    start_time: string | null;
+    venue: string | null;
+    teams: MatchTeam[]
+};
