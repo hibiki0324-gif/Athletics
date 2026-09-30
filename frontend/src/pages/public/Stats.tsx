@@ -1,7 +1,10 @@
+
 import StatsCard,{ type StatsCardProps } from "../../components/stats/StatsCard";
 import Title from "../../components/stats/Title";
 
+
 function Stats(){
+
 
     {/* ダミーデータ作成 */}
     const statsCards: StatsCardProps[] = [

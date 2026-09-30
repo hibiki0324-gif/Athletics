@@ -35,7 +35,7 @@ function StatsCard({ title, rows, updatedAt, linkText }: StatsCardProps){
             </table>
             <div className="mt-3 flex items-center justify-between text-sm text-gray-400">
                 <p>{updatedAt}</p>
-                <Link to="#" className="text-blue-600 hover:underline">
+                <Link to="/stats/detail" className="text-blue-600 hover:underline">
                     {linkText}
                 </Link>
             </div>
