@@ -7,13 +7,13 @@ import Login from "./pages/public/Login";
 import Stats from "./pages/public/Stats";
 import PlayerDetail from "./pages/public/PlayerDetail";
 import ResultDetail from "./pages/public/ResultDetail";
-import StatsDetail from "./components/stats/StatsDetail";
+import StatsDetail from "./pages/public/StatsDetail";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />}/>
+        <Route path="/login" element={<Login />} />
         <Route element={<Layout />}>
           <Route path="/" element={<Top />} />
           <Route path="/players" element={<Player />} />
