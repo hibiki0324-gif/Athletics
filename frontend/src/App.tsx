@@ -8,12 +8,13 @@ import Stats from "./pages/public/Stats";
 import PlayerDetail from "./pages/public/PlayerDetail";
 import ResultDetail from "./pages/public/ResultDetail";
 import PlayerRegister from "./pages/admin/PlayerRegister";
+import StatsDetail from "./pages/public/StatsDetail";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />}/>
+        <Route path="/login" element={<Login />} />
         <Route element={<Layout />}>
           <Route path="/" element={<Top />} />
           <Route path="/players" element={<Player />} />
@@ -22,6 +23,7 @@ function App() {
           <Route path="/results/:id" element={<ResultDetail />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/admin/players-register" element={<PlayerRegister/>}></Route>
+          <Route path="/stats/detail" element={<StatsDetail />} />
         </Route>
       </Routes>
     </BrowserRouter>
