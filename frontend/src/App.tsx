@@ -7,6 +7,7 @@ import Login from "./pages/public/Login";
 import Stats from "./pages/public/Stats";
 import PlayerDetail from "./pages/public/PlayerDetail";
 import ResultDetail from "./pages/public/ResultDetail";
+import PlayerRegister from "./pages/admin/PlayerRegister";
 import StatsDetail from "./pages/public/StatsDetail";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/results" element={<Result />} />
           <Route path="/results/:id" element={<ResultDetail />} />
           <Route path="/stats" element={<Stats />} />
+          <Route path="/admin/players-register" element={<PlayerRegister/>}></Route>
           <Route path="/stats/detail" element={<StatsDetail />} />
         </Route>
       </Routes>
