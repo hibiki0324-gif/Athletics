@@ -438,11 +438,138 @@ INSERT INTO seasons (
 INSERT INTO teams (
     name,
     is_active
-) VALUES (
+) VALUES
+(
     'アスレチックス',
+    TRUE
+),
+(
+    '福岡レッドホークス',
+    TRUE
+),
+(
+    '福岡ブルースターズ',
+    TRUE
+),
+(
+    '博多フェニックス',
     TRUE
 );
 
+-- ============================================
+-- Initial match data
+-- ============================================
+
+-- 試合日程
+INSERT INTO matches (
+    season_id,
+    match_date,
+    start_time,
+    venue
+)
+SELECT
+    s.id,
+    m.match_date,
+    m.start_time,
+    m.venue
+FROM seasons s
+CROSS JOIN (
+    SELECT
+        CAST('2026-09-06' AS DATE) AS match_date,
+        CAST('10:00:00' AS TIME) AS start_time,
+        '球場未定' AS venue
+
+    UNION ALL
+
+    SELECT
+        CAST('2026-09-20' AS DATE),
+        CAST('17:00:00' AS TIME),
+        '上月隈第２球場'
+
+    UNION ALL
+
+    SELECT
+        CAST('2026-10-18' AS DATE),
+        CAST('12:00:00' AS TIME),
+        '汐井球場'
+) AS m
+WHERE s.year = 2026;
+
+
+-- ============================================
+-- Initial match team assignments
+-- ============================================
+
+-- 9月6日：アスレチックス vs 福岡レッドホークス
+INSERT INTO match_teams (
+    match_id,
+    team_id,
+    is_home,
+    final_score
+)
+SELECT
+    m.id,
+    t.id,
+    CASE
+        WHEN t.name = 'アスレチックス' THEN TRUE
+        ELSE FALSE
+    END,
+    0
+FROM matches m
+CROSS JOIN teams t
+WHERE m.match_date = '2026-09-06'
+  AND t.name IN (
+      'アスレチックス',
+      '福岡レッドホークス'
+  );
+
+
+-- 9月20日：アスレチックス vs 福岡ブルースターズ
+INSERT INTO match_teams (
+    match_id,
+    team_id,
+    is_home,
+    final_score
+)
+SELECT
+    m.id,
+    t.id,
+    CASE
+        WHEN t.name = 'アスレチックス' THEN TRUE
+        ELSE FALSE
+    END,
+    0
+FROM matches m
+CROSS JOIN teams t
+WHERE m.match_date = '2026-09-20'
+  AND t.name IN (
+      'アスレチックス',
+      '福岡ブルースターズ'
+  );
+
+
+-- 10月18日：アスレチックス vs 博多フェニックス
+INSERT INTO match_teams (
+    match_id,
+    team_id,
+    is_home,
+    final_score
+)
+SELECT
+    m.id,
+    t.id,
+    CASE
+        WHEN t.name = 'アスレチックス' THEN FALSE
+        ELSE TRUE
+    END,
+    0
+FROM matches m
+CROSS JOIN teams t
+WHERE m.match_date = '2026-10-18'
+  AND t.name IN (
+      'アスレチックス',
+      '博多フェニックス'
+  );
 
 -- ============================================
 -- Initial player data

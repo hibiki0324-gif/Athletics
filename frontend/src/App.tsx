@@ -9,6 +9,7 @@ import PlayerDetail from "./pages/public/PlayerDetail";
 import ResultDetail from "./pages/public/ResultDetail";
 import PlayerRegister from "./pages/admin/PlayerRegister";
 import StatsDetail from "./pages/public/StatsDetail";
+import Schedule from "./pages/public/Schedule";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/stats" element={<Stats />} />
           <Route path="/admin/players-register" element={<PlayerRegister/>}></Route>
           <Route path="/stats/detail" element={<StatsDetail />} />
+          <Route path="/schedule" element={<Schedule />} />
         </Route>
       </Routes>
     </BrowserRouter>
