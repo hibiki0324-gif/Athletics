@@ -44,6 +44,13 @@ class Player(Base):
         default=True,
     )
 
+    positions = relationship(
+        "Position",
+        secondary="player_positions",
+        viewonly=True,
+        order_by="Position.id",
+    )
+
     player_positions = relationship(
         "PlayerPosition",
         back_populates="player",

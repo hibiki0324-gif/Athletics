@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import type { Position } from "../../../types/player";
 
 type PlayerRegisterFormProps ={
     onSubmit:(e: React.SubmitEvent<HTMLFormElement>)=> void;
+    positions:Position[] | undefined,
     inputName:string,
     setInputName:(value:string)=>void,
     inputNumber:string,
@@ -10,12 +11,18 @@ type PlayerRegisterFormProps ={
     setInputThrowing:(value:string)=>void,
     inputBatting:string,
     setInputBatting:(value:string)=>void,
+    inputPositions:number[],
+    setInputPositions:(value:number[])=>void,
     inputImage:string | null,
     setInputImage:(value:string | null)=>void,
+    clearButton:()=>void,
+    isEditing:boolean,
+    deleteSubmit:()=>void
 };
 
 function PlayerRegisterForm({
         onSubmit,
+        positions,
         inputName,
         setInputName,
         inputNumber,
@@ -24,41 +31,47 @@ function PlayerRegisterForm({
         setInputThrowing,
         inputBatting,
         setInputBatting,
+        inputPositions,
+        setInputPositions,
         inputImage,
-        setInputImage
+        setInputImage,
+        clearButton,
+        isEditing,
+        deleteSubmit
     }:PlayerRegisterFormProps){
 
     return(
-        <div className="flex flex-col gap-8 py-6 px-15">
-            <div className="flex items-center gap-3 text-base text-gray-500">
-                <Link to="/" className="hover:underline">管理画面TOP</Link>
-                <span>&gt;</span>
-                <Link to="/players" className="hover:underline">選手管理</Link>
-                <span>&gt;</span>
-                <span className="text-slate-900 font-medium">選手登録フォーム</span>
-            </div>
-
-            <div className="w-full max-w-[600px] mx-auto">
-                <h1 className="font-bold text-2xl text-center mb-6">選手登録フォーム</h1>
-                <div className="bg-white rounded-2xl shadow-md p-10 border border-gray-300 my-6">
-                    <form 
-                        className="flex flex-col gap-6"
-                        onSubmit={onSubmit}
+        <div className="h-full bg-white rounded-2xl shadow-md px-10 pt-5 border border-gray-300">
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="font-bold text-2xl">選手登録フォーム</h1>
+                    <button
+                        type="button"
+                        onClick={clearButton}
+                        className="px-5 py-2 text-base font-bold text-white bg-blue-500 border border-gray-300 rounded-lg transition-colors hover:bg-blue-600"
                     >
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xl font-bold" htmlFor="name">選手名</label>
-                            <input 
-                                className="w-full h-10 px-3 border border-gray-300 rounded-md"
-                                type="text"
-                                id="name"
-                                name="name"
-                                onChange={(e)=>setInputName(e.target.value)}
-                                value={inputName}
-                            />
-                        </div>
+                        新規登録
+                    </button>
+                </div>
+                <form
+                    className="flex flex-col gap-6"
+                    onSubmit={onSubmit}
+                >
+                    <div className="flex flex-col gap-2">
+                        <label className="text-xl font-bold" htmlFor="name">選手名</label>
+                        <input 
+                            className="w-full h-10 px-3 border border-gray-300 rounded-md"
+                            type="text"
+                            id="name"
+                            name="name"
+                            required
+                            onChange={(e)=>setInputName(e.target.value)}
+                            value={inputName}
+                        />
+                    </div>
+                    <div className="grid grid-cols-[1fr_2fr] gap-4">
                         <div className="flex flex-col gap-2">
                             <label className="text-xl font-bold" htmlFor="uniform_number">背番号</label>
-                            <input 
+                            <input
                                 className="w-full h-10 px-3 border border-gray-300 rounded-md"
                                 type="number"
                                 id="uniform_number"
@@ -68,49 +81,90 @@ function PlayerRegisterForm({
                             />
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label className="text-xl font-bold" htmlFor="throwing_hand">投</label>
-                            <input 
-                                className="w-full h-10 px-3 border border-gray-300 rounded-md"
-                                type="text"
-                                id="throwing_hand"
-                                name="throwing_hand"
-                                onChange={(e)=>setInputThrowing(e.target.value)}
-                                value={inputThrowing}
-                            />
+                            <span className="text-xl font-bold">投打</span>
+                            <div className="grid grid-cols-2 gap-2">
+                                <input
+                                    className="w-full h-10 px-3 border border-gray-300 rounded-md"
+                                    type="text"
+                                    id="throwing_hand"
+                                    name="throwing_hand"
+                                    aria-label="投げ手"
+                                    required
+                                    onChange={(e)=>setInputThrowing(e.target.value)}
+                                    value={inputThrowing}
+                                />
+                                <input
+                                    className="w-full h-10 px-3 border border-gray-300 rounded-md"
+                                    type="text"
+                                    id="batting_hand"
+                                    name="batting_hand"
+                                    aria-label="打席"
+                                    required
+                                    onChange={(e)=>setInputBatting(e.target.value)}
+                                    value={inputBatting}
+                                />
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xl font-bold" htmlFor="batting_hand">打</label>
-                            <input 
-                                className="w-full h-10 px-3 border border-gray-300 rounded-md"
-                                type="text"
-                                id="batting_hand"
-                                name="batting_hand"
-                                onChange={(e)=>setInputBatting(e.target.value)}
-                                value={inputBatting}
-                            />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-xl font-bold">ポジション</label>
+                        <div className="flex flex-wrap gap-4">
+                            {positions?.map((position)=>(
+                                <label key={position.id} className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    checked={inputPositions.includes(position.id)}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setInputPositions([...inputPositions, position.id]);
+                                        } else {
+                                            setInputPositions(inputPositions.filter((id) => id !== position.id));
+                                        }
+                                    }}
+                                />
+                                {position.name}
+                                </label>
+                            ))}
                         </div>
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xl font-bold" htmlFor="profile_image">選手画像</label>
-                            <input 
-                                className="w-full h-10 px-3 border border-gray-300 rounded-md"
-                                type="text"
-                                id="profile_image"
-                                name="profile_image"
-                                onChange={(e)=>setInputImage(e.target.value)}
-                                value={inputImage ?? ""}
-                            />
-                        </div>
-                        <div className="flex justify-center pt-4">
-                            <button 
-                                className="w-[300px] h-[50px] text-xl text-white bg-[#263A87] rounded-md hover:opacity-90"
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label className="text-xl font-bold" htmlFor="profile_image">選手画像</label>
+                        <input 
+                            className="w-full h-10 px-3 border border-gray-300 rounded-md"
+                            type="text"
+                            id="profile_image"
+                            name="profile_image"
+                            onChange={(e)=>setInputImage(e.target.value)}
+                            value={inputImage ?? ""}
+                        />
+                    </div>
+                    {isEditing ? (
+                            <div className="flex justify-center gap-4 pt-4 mb-8">
+                                <button
+                                    type="submit"
+                                    className="w-40 h-13 text-xl text-white bg-blue-500 rounded-md transition-colors hover:bg-blue-700"
+                                >
+                                    更新
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={deleteSubmit}
+                                    className="w-40 h-13 text-xl text-white bg-red-500 rounded-md transition-colors hover:bg-red-700"
+                                >
+                                    削除
+                                </button>
+                            </div>
+                    ):(
+                        <div className="flex justify-center pt-4 mb-8">
+                            <button
+                                className="w-50 h-13 text-xl text-white bg-blue-500 rounded-md hover:opacity-90"
                                 type="submit"
                             >
                                 登録
                             </button>
                         </div>
-                    </form>
-                </div>
-            </div>
+                    )}
+                </form>
         </div>
     )
 };

@@ -7,10 +7,14 @@ type PlayerCardProps = {
 }
 
 function PlayerCard({ players }: PlayerCardProps) {
+
+    //在籍中の選手のみ表示させる
+    const activePlayers = players.filter((player)=>player.is_active);
+
     return (
         <div className="w-full py-10">
             <div className="w-[90%] mx-auto grid grid-cols-3 gap-x-8 gap-y-8">
-                {players.map((player) => (
+                {activePlayers.map((player) => (
                     <div
                         key={player.id}
                         className="border border-gray-200 shadow-sm rounded-xl w-full text-center text-xl font-medium py-4"
@@ -24,7 +28,7 @@ function PlayerCard({ players }: PlayerCardProps) {
                             {player.uniform_number}
                         </p>
                         <p className="py-1">
-                            選手
+                            {player.positions.map((position) => position.name).join("・")}
                         </p>
                         <Link to={`/players/${player.id}`}>
                             <p className="py-1">

@@ -1,3 +1,9 @@
+
+export type Position = {
+  id: number
+  name: string
+}
+
 export type Player = {
   id: number
   name: string
@@ -6,4 +12,5 @@ export type Player = {
   throwing_hand: string
   profile_image: string | null
   is_active: boolean
+  positions: Position[]
 }
