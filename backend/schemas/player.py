@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+from schemas.position import PositionResponse
 
 
 class PlayerCreate(BaseModel):
@@ -28,3 +29,4 @@ class PlayerResponse(BaseModel):
     throwing_hand: str
     profile_image: str | None
     is_active: bool
+    positions: list[PositionResponse] = []
