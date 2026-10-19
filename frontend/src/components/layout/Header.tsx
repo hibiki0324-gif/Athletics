@@ -46,6 +46,9 @@ function Header() {
 
                 <div className="flex justify-end pr-[50px]">
                     <Link to="/login">ログイン</Link>
+                    <div className='pl-2 text-red-500'>
+                        <Link to="/admin">管理ページ（動作確認用）</Link>
+                    </div>
                 </div>
             </div>
 

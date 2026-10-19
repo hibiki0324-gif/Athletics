@@ -10,6 +10,7 @@ import ResultDetail from "./pages/public/ResultDetail";
 import PlayerRegister from "./pages/admin/PlayerRegister";
 import StatsDetail from "./pages/public/StatsDetail";
 import Schedule from "./pages/public/Schedule";
+import DashBoard from "./pages/admin/DashBoard";
 
 function App() {
   return (
@@ -23,7 +24,8 @@ function App() {
           <Route path="/results" element={<Result />} />
           <Route path="/results/:id" element={<ResultDetail />} />
           <Route path="/stats" element={<Stats />} />
-          <Route path="/admin/players-register" element={<PlayerRegister/>}></Route>
+          <Route path="/admin" element={<DashBoard />}/>
+          <Route path="/admin/players-register" element={<PlayerRegister />}/>
           <Route path="/stats/detail" element={<StatsDetail />} />
           <Route path="/schedule" element={<Schedule />} />
         </Route>
