@@ -1,8 +1,15 @@
 # Mac
 .DS_Store
 
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
 # Environment
 .env
+.env.*
+!.env.example
 
 # Logs
 *.log
@@ -17,3 +24,18 @@ public/uploads/*
 # Python
 __pycache__/
 *.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node（frontend/.gitignore でも管理）
+node_modules/
+dist/
+
+# Claude Code
+# CLAUDE.md は各自がローカルで管理するためコミットしない
+CLAUDE.md
+CLAUDE.local.md
+.claude/settings.local.json
