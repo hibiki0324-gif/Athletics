@@ -10,6 +10,7 @@ from models.position import Position
 from models.player_position import PlayerPosition
 from models.match_battery import MatchBattery
 from models.match_pitching_decision import MatchPitchingDecision
+from models.user import User
 
 from routers.players import router as players_router
 from routers.seasons import router as seasons_router
