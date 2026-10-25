@@ -105,3 +105,9 @@ export type MatchSummary = {
     venue: string | null;
     teams: MatchTeam[]
 };
+
+export type Team = {
+    id: number;
+    name: string;
+    is_active: boolean;
+};

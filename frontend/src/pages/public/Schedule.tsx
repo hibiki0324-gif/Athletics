@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+// 管理者用の編集ボタンを有効化する時に使用
+// import { Link } from "react-router-dom";
 
 type MatchTeam = {
     id: number;
@@ -27,6 +29,10 @@ function Schedule() {
     const [matches, setMatches] = useState<Match[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+
+    // 管理者判定（ログイン機能の実装後に有効化する）
+    // ログインユーザー情報（users.is_admin）を参照し、管理者のみ編集ボタンを表示する
+    // const isAdmin = loginUser?.is_admin ?? false;
 
     // APIから試合日程を取得
     useEffect(() => {
@@ -177,6 +183,17 @@ function Schedule() {
                     </div>
 
                     <div className="flex items-center gap-3">
+                        {/* 管理者のみ表示：試合日程の編集ページへ遷移（ログイン機能の実装後に有効化する）
+                        {isAdmin && (
+                            <Link
+                                to="/admin/schedule"
+                                className="shrink-0 rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-blue-600"
+                            >
+                                日程を編集
+                            </Link>
+                        )}
+                        */}
+
                         <label
                             htmlFor="schedule-year"
                             className="shrink-0 text-sm font-semibold text-slate-700"

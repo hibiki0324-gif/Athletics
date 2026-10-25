@@ -11,6 +11,7 @@ import PlayerRegister from "./pages/admin/PlayerRegister";
 import StatsDetail from "./pages/public/StatsDetail";
 import Schedule from "./pages/public/Schedule";
 import DashBoard from "./pages/admin/DashBoard";
+import ScheduleEdit from "./pages/admin/ScheduleEdit";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/stats" element={<Stats />} />
           <Route path="/admin" element={<DashBoard />}/>
           <Route path="/admin/players-register" element={<PlayerRegister />}/>
+          <Route path="/admin/schedule" element={<ScheduleEdit />}/>
           <Route path="/stats/detail" element={<StatsDetail />} />
           <Route path="/schedule" element={<Schedule />} />
         </Route>
