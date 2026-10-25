@@ -69,6 +69,31 @@ function MenuCard(){
                 </Link>
 
                 <Link
+                    to="/admin/schedule"
+                    className="flex flex-col gap-4 bg-white border border-gray-200 rounded-2xl shadow-sm p-7 transition-all hover:shadow-md hover:border-purple-300 hover:-translate-y-0.5"
+                >
+                    <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                            <path d="M16 3v4M8 3v4M3 10h18"></path>
+                        </svg>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                        <h2 className="text-lg font-bold text-slate-900">試合日程管理</h2>
+                        <p className="text-sm text-gray-500 leading-relaxed">
+                            試合日程（日付・開始時刻・球場・対戦チーム）の登録・編集・削除を行います。
+                        </p>
+                    </div>
+                    <span className="flex items-center gap-1.5 text-sm text-slate-900">
+                        <span className="underline">試合日程一覧・登録へ</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12h14"></path>
+                            <path d="M13 5l7 7-7 7"></path>
+                        </svg>
+                    </span>
+                </Link>
+
+                <Link
                     to="#"
                     className="flex flex-col gap-4 bg-white border border-gray-200 rounded-2xl shadow-sm p-7 transition-all hover:shadow-md hover:border-orange-300 hover:-translate-y-0.5"
                 >
