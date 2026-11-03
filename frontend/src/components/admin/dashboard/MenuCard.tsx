@@ -38,7 +38,7 @@ function MenuCard(){
                 </Link>
 
                 <Link
-                    to="#"
+                    to="/admin/results-register"
                     className="flex flex-col gap-4 bg-white border border-gray-200 rounded-2xl shadow-sm p-7 transition-all hover:shadow-md hover:border-green-300 hover:-translate-y-0.5"
                 >
                     <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">

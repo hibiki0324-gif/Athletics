@@ -4,6 +4,12 @@ export type Season = {
     name: string;
 };
 
+export type Teams = {
+    id: number,
+    name: string,
+    is_active: boolean
+}
+
 export type MatchTeam = {
     id: number;
     team_id: number;
