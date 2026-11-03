@@ -2,7 +2,7 @@ import ResultRegisterForm from "../../components/admin/results/ResultRegisterFor
 import ResultList from "../../components/admin/results/ResultList";
 import Title from "../../components/admin/results/Title";
 import { useEffect, useState } from "react";
-import { type MatchDetail, type MatchSummary,type MatchTeam,type Season,type Teams} from "../../types/match";
+import { type MatchDetail, type MatchSummary,type MatchTeam,type Season,type Team} from "../../types/match";
 import type { Player } from "../../types/player";
 import { useSearchParams } from "react-router-dom";
 
@@ -69,7 +69,7 @@ function ResultRegister(){
     },[]);
 
     //チームデータ取得
-    const [teams,setTeams] = useState<Teams[] | undefined>(undefined);
+    const [teams,setTeams] = useState<Team[] | undefined>(undefined);
 
     useEffect(()=>{
 
@@ -80,7 +80,7 @@ function ResultRegister(){
                 throw new Error("チーム情報を取得できませんでした。");
             }
 
-            const teamData:Teams[] = await teamRes.json();
+            const teamData:Team[] = await teamRes.json();
             setTeams(teamData);
         }
 

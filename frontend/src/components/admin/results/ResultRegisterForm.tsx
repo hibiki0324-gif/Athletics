@@ -1,12 +1,12 @@
 
-import type { Season, Teams } from "../../../types/match";
+import type { Season, Team } from "../../../types/match";
 import type { Player } from "../../../types/player";
 
 type ResultRegisterProps ={
     clearButton:()=>void,
     onSubmit:(e:React.SubmitEvent<HTMLFormElement>)=>void,
     seasons:Season[] | undefined;
-    teams:Teams[] | undefined;
+    teams:Team[] | undefined;
     players:Player[] | undefined;
     matchDate:string,
     setMatchDate:(value:string)=>void,
