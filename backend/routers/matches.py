@@ -486,3 +486,66 @@ def update_match(
     db.refresh(match)
 
     return match
+
+
+@router.delete(
+    "/{match_id}",
+    status_code=204,
+)
+def delete_match(
+    match_id: int,
+    db: Session = Depends(get_db),
+):
+    match = (
+        db.query(Match)
+        .filter(Match.id == match_id)
+        .first()
+    )
+
+    if not match:
+        raise HTTPException(
+            status_code=404,
+            detail="試合が見つかりません",
+        )
+
+    # --------------------------------
+    # 試合結果の登録有無
+    # 削除すると結果データもCASCADEで消えるため、
+    # 結果が登録済みの試合は削除できないようにする
+    # --------------------------------
+    match_team_ids = [
+        match_team.id
+        for match_team in (
+            db.query(MatchTeam)
+            .filter(MatchTeam.match_id == match_id)
+            .all()
+        )
+    ]
+
+    result_queries = [
+        db.query(MatchInning).filter(
+            MatchInning.match_team_id.in_(match_team_ids)
+        ),
+        db.query(MatchLineupEntry).filter(
+            MatchLineupEntry.match_team_id.in_(match_team_ids)
+        ),
+        db.query(MatchBattingStat).filter(
+            MatchBattingStat.match_team_id.in_(match_team_ids)
+        ),
+        db.query(MatchBattery).filter(
+            MatchBattery.match_team_id.in_(match_team_ids)
+        ),
+        db.query(MatchPitchingDecision).filter(
+            MatchPitchingDecision.match_id == match_id
+        ),
+    ]
+
+    if any(query.first() for query in result_queries):
+        raise HTTPException(
+            status_code=409,
+            detail="試合結果が登録されているため削除できません",
+        )
+
+    # match_teams はCASCADEで削除される
+    db.delete(match)
+    db.commit()

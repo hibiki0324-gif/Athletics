@@ -406,6 +406,40 @@ COLLATE=utf8mb4_unicode_ci;
 
 
 -- ============================================
+-- users
+--
+-- Login accounts and roles.
+-- is_admin = TRUE  : administrator (can use admin UI)
+-- player_id IS NOT NULL : linked to a player
+-- Neither of the above : other (general user)
+-- ============================================
+CREATE TABLE users (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    login_id VARCHAR(50) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    player_id BIGINT UNSIGNED NULL,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    last_login_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+
+    UNIQUE KEY uk_users_login_id (login_id),
+    UNIQUE KEY uk_users_player (player_id),
+
+    CONSTRAINT fk_users_player
+        FOREIGN KEY (player_id)
+        REFERENCES players (id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================
 -- Initial position master data
 -- ============================================
 INSERT INTO positions (name) VALUES

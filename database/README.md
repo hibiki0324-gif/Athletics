@@ -54,9 +54,11 @@ players
     │       │
     │       └── positions
     │
-    └── match_lineup_entries
-            │
-            └── positions
+    ├── match_lineup_entries
+    │       │
+    │       └── positions
+    │
+    └── users
 
 seasons
     │
@@ -94,6 +96,7 @@ teams
 | `match_batting_stats` | 試合ごとの打撃成績 |
 | `match_pitching_decisions` | 勝敗・セーブなどの投手結果 |
 | `match_batteries` | 試合中の投手・捕手の組み合わせ履歴 |
+| `users` | ログインユーザー・ロール情報 |
 
 ---
 
@@ -577,6 +580,69 @@ UNIQUE
 
 ---
 
+# 13. users
+
+ログインユーザーとロール（権限）を管理するテーブルです。
+
+選手情報（`players`）とは分けて管理し、必要な場合のみ選手と紐付けます。
+
+## 主な用途
+
+- ログインID・パスワード（ハッシュ値）
+- 選手との紐付け
+- 管理者かどうか
+- アカウントの有効・無効状態
+
+## ロールの判定
+
+ロールは以下の組み合わせで判定します。
+
+| ロール | 条件 |
+|---|---|
+| 管理者 | `is_admin = TRUE` |
+| 選手 | `player_id IS NOT NULL` |
+| その他 | 上記のどちらにも当てはまらない |
+
+管理者と選手は両立できます（例: 選手として登録されている管理者）。
+
+Frontendでは、ログインユーザーの `is_admin` を見て管理画面のUIを出し分けます。
+
+## カラム
+
+| カラム | 型 | NULL | 内容 |
+|---|---|---|---|
+| `id` | BIGINT UNSIGNED | NO | ユーザーID |
+| `login_id` | VARCHAR(50) | NO | ログインID |
+| `password_hash` | VARCHAR(255) | NO | パスワードのハッシュ値 |
+| `player_id` | BIGINT UNSIGNED | YES | 紐付く選手ID |
+| `is_admin` | BOOLEAN | NO | 管理者フラグ |
+| `is_active` | BOOLEAN | NO | アカウント有効状態 |
+| `last_login_at` | DATETIME | YES | 最終ログイン日時 |
+| `created_at` | DATETIME | NO | 作成日時 |
+| `updated_at` | DATETIME | NO | 更新日時 |
+
+## 制約
+
+```text
+PRIMARY KEY
+    id
+
+UNIQUE
+    login_id
+    player_id
+
+FOREIGN KEY
+    player_id → players.id
+    ON DELETE SET NULL
+```
+
+- ログインIDは重複できません。
+- 1人の選手に紐付けられるユーザーは1つまでです。
+- 選手が削除された場合でもユーザーは残り、紐付けのみ解除されます。
+- パスワードは平文で保存せず、必ずハッシュ化した値を保存します。
+
+---
+
 # テーブル間の関係
 
 主要なテーブル間の関係は以下です。
@@ -1013,6 +1079,7 @@ backend/models/player.py
 | `match_batting_stats` | `MatchBattingStats` |
 | `match_pitching_decisions` | `MatchPitchingDecision` |
 | `match_batteries` | `MatchBattery` |
+| `users` | `User` |
 
 ---
 

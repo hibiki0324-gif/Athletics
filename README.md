@@ -525,7 +525,12 @@ PUT
 
 | Method | Endpoint | 内容 |
 | --- | --- | --- |
+| GET | `/matches` | 試合一覧取得 |
+| GET | `/matches/{match_id}` | 試合詳細取得 |
 | POST | `/matches` | 試合登録 |
+| PUT | `/matches/{match_id}` | 試合更新 |
+| DELETE | `/matches/{match_id}` | 試合削除（試合結果が登録済みの場合は409） |
+| PUT | `/matches/{match_id}/teams` | 対戦チーム登録・更新 |
 
 今後、試合結果・打撃成績・出場選手などのAPIを拡張していきます。
 

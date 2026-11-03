@@ -12,6 +12,7 @@ import StatsDetail from "./pages/public/StatsDetail";
 import Schedule from "./pages/public/Schedule";
 import DashBoard from "./pages/admin/DashBoard";
 import ResultRegister from "./pages/admin/ResultRegister";
+import ScheduleEdit from "./pages/admin/ScheduleEdit";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/admin" element={<DashBoard />}/>
           <Route path="/admin/players-register" element={<PlayerRegister />}/>
           <Route path="/admin/results-register" element={<ResultRegister />}/>
+          <Route path="/admin/schedule" element={<ScheduleEdit />}/>
         </Route>
       </Routes>
     </BrowserRouter>
