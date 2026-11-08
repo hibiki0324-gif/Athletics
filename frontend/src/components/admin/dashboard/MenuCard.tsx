@@ -48,16 +48,11 @@ function MenuCard(){
                             <path d="M8.5 13l2 2 4.5-4.5"></path>
                         </svg>
                     </div>
-                    <div className="flex flex-col gap-2.5">
-                        <div className="flex flex-col gap-1.5">
-                            <h2 className="text-lg font-bold text-slate-900">試合結果管理</h2>
-                            <p className="text-sm text-gray-500 leading-relaxed">
-                                試合日程・結果の登録と一覧表示を行います。
-                            </p>
-                        </div>
-                        <span className="self-start text-xs text-gray-500 bg-gray-100 rounded-full px-2.5 py-1">
-                            対戦チーム・シーズンの登録もこちら
-                        </span>
+                    <div className="flex flex-col gap-1.5">
+                        <h2 className="text-lg font-bold text-slate-900">試合結果管理</h2>
+                        <p className="text-sm text-gray-500 leading-relaxed">
+                            試合日程で登録済みの試合に、結果（スコア・イニング・バッテリー・責任投手）を入力します。
+                        </p>
                     </div>
                     <span className="flex items-center gap-1.5 text-sm text-slate-900">
                         <span className="underline">試合結果一覧・登録へ</span>
