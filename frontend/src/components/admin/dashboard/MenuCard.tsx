@@ -94,7 +94,7 @@ function MenuCard(){
                 </Link>
 
                 <Link
-                    to="#"
+                    to="/admin/stats-register"
                     className="flex flex-col gap-4 bg-white border border-gray-200 rounded-2xl shadow-sm p-7 transition-all hover:shadow-md hover:border-orange-300 hover:-translate-y-0.5"
                 >
                     <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
