@@ -4,7 +4,7 @@ import StatsRegisterForm from "../../components/admin/stats/StatsRegisterForm";
 import Title from "../../components/admin/stats/Title";
 import type { MatchSummary } from "../../types/match";
 import type { Player, Position } from "../../types/player";
-import type { LineupRow, MatchLineupResponse } from "../../types/stats";
+import type { BattingStatRow, LineupRow, MatchBattingStatResponse, MatchLineupResponse } from "../../types/stats";
 import { useSearchParams } from "react-router-dom";
 
 function StatsRegister() {
@@ -127,7 +127,7 @@ function StatsRegister() {
         setLineupRow(lineupRow?.filter((_, i) => i !== index));
     }
 
-    const [searchParams,] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const selectedId = searchParams.get("result_id");
     const selectedResultId = results?.find((result) => result.id === Number(selectedId));
     const matchTeamId = selectedResultId?.teams.find((team) => team.team_name === "アスレチックス")?.id;
@@ -202,8 +202,7 @@ function StatsRegister() {
 
                 if (!lineupRequest.ok) {
                     const errorData = await lineupRequest.json();
-                    console.log(errorData.detail);
-                    throw new Error("スタメンの登録に失敗しました。")
+                    throw new Error(errorData.detail)
                 }
 
                 await lineupRequest.json();
@@ -215,6 +214,149 @@ function StatsRegister() {
         };
 
         putFetch();
+    };
+
+    /* ------------------------------------------------------------------------------------------------------------------- */
+    //打撃成績登録
+    const [matchBattingStat, setMatchBattingStat] = useState<BattingStatRow[] | undefined>([]);
+    const [savedBattingStats, setSavedBattingStats] = useState<MatchBattingStatResponse[]>([]);
+
+    //lineupRowからplayer_idを取得
+    const battingStatsPlayers =
+        lineupRow?.map((row) => row.player_id);
+
+    //重複しているidを外して、playerIdを抽出
+    const uniquePlayers =
+        [...new Set(battingStatsPlayers)].filter((id): id is number => id !== undefined);
+
+    //打撃成績の初期データ登録（0埋め）
+    const initBattingStats = uniquePlayers.map((playerId) => ({
+        player_id: playerId,
+        at_bats: 0,
+        hits: 0,
+        doubles: 0,
+        triples: 0,
+        home_runs: 0,
+        runs_batted_in: 0,
+        walks: 0,
+        hit_by_pitch: 0,
+        sacrifice_bunts: 0,
+        sacrifice_flies: 0,
+        strikeouts: 0,
+        stolen_bases: 0,
+    }));
+
+    //試合（selectedId）が変わった時だけ、保存済みの打撃成績を取得する
+    useEffect(() => {
+        setSavedBattingStats([]);
+        if (!selectedId) return;
+
+        const getBattingFetch = async () => {
+            try {
+                const battingStatRes = await fetch(`http://localhost:8000/matches/${selectedId}/batting-stats`);
+
+                if (!battingStatRes.ok) {
+                    throw new Error("成績が取得できませんでした。");
+                }
+
+                const getBattingStatResData: MatchBattingStatResponse[] = await battingStatRes.json();
+                setSavedBattingStats(getBattingStatResData);
+
+            } catch (error) {
+                alert(error);
+            }
+        };
+
+        getBattingFetch();
+
+    }, [selectedId]);
+
+    //出場選手（lineupRow）の変化に合わせてmatchBattingStatを同期する
+    //・入力済みの選手はそのまま維持（編集中の値を消さない）
+    //・新規に追加された選手は保存済みデータ、無ければ0埋めを追加
+    //・出場から外れた選手はリストから除外
+    useEffect(() => {
+        setMatchBattingStat((prev) => {
+            const prevRows = prev ?? [];
+
+            return initBattingStats.map((zeroRow) => {
+                const existingRow =
+                    prevRows.find((row) => row.player_id === zeroRow.player_id);
+
+                if (existingRow) return existingRow;
+
+                const savedStat =
+                    savedBattingStats.find((stat) =>
+                        stat.match_team_id === matchTeamId &&
+                        stat.player_id === zeroRow.player_id
+                    );
+
+                if (!savedStat) return zeroRow;
+
+                return {
+                    player_id: savedStat.player_id,
+                    at_bats: savedStat.at_bats,
+                    hits: savedStat.hits,
+                    doubles: savedStat.doubles,
+                    triples: savedStat.triples,
+                    home_runs: savedStat.home_runs,
+                    runs_batted_in: savedStat.runs_batted_in,
+                    walks: savedStat.walks,
+                    hit_by_pitch: savedStat.hit_by_pitch,
+                    sacrifice_bunts: savedStat.sacrifice_bunts,
+                    sacrifice_flies: savedStat.sacrifice_flies,
+                    strikeouts: savedStat.strikeouts,
+                    stolen_bases: savedStat.stolen_bases,
+                };
+            });
+        });
+    }, [lineupRow, savedBattingStats])
+
+    //打撃成績の各入力欄のonChangeから呼ぶ更新関数（対象選手の該当項目だけ書き換える）
+    const updateBattingStat = (
+        playerId: number,
+        field: keyof BattingStatRow,
+        value: number
+    ) => {
+        setMatchBattingStat((prev) =>
+            prev?.map((row) =>
+                row.player_id === playerId ? { ...row, [field]: value } : row
+            )
+        );
+    };
+
+    //打撃成績API送信用雛形
+    const battingStatData = {
+        match_team_id: matchTeamId,
+        stats: matchBattingStat ?? []
+    };
+
+    //打撃成績登録処理
+    const handleBattingSubmit = (e: React.SubmitEvent<HTMLFormElement>)=>{
+        e.preventDefault()
+
+        const statPutFetch = async() => {
+            try{
+                const battingStatRequest = await fetch(`http://localhost:8000/matches/${selectedId}/batting-stats`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(battingStatData),
+                });
+
+                if (!battingStatRequest.ok){
+                    const battingStatErrorData = await battingStatRequest.json();
+                    throw new Error(battingStatErrorData.detail);
+                }
+
+                await battingStatRequest.json();
+                alert("打撃成績の登録が完了しました。");
+                setSearchParams("");
+                
+            }catch(error){
+                alert(error);
+            }
+        }
+        statPutFetch();
     };
 
     return (
@@ -245,6 +387,9 @@ function StatsRegister() {
                     createRow={createRow}
                     deleteRow={deleteRow}
                     onSubmit={handleSubmit}
+                    matchBattingStat={matchBattingStat}
+                    updateBattingStat={updateBattingStat}
+                    handleBattingSubmit={handleBattingSubmit}
                 />
             </div>
         </div>

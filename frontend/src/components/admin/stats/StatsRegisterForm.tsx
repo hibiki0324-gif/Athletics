@@ -1,7 +1,7 @@
 import type { MatchSummary } from "../../../types/match";
 import type { Player, Position } from "../../../types/player";
 import { useState } from "react";
-import type { LineupRow } from "../../../types/stats";
+import type { BattingStatRow, LineupRow } from "../../../types/stats";
 
 type StatsRegisterFormProps ={
     results:MatchSummary[] | undefined,
@@ -22,7 +22,10 @@ type StatsRegisterFormProps ={
     setExitInning:(value:number)=>void
     createRow:()=>void,
     deleteRow:(index:number)=>void,
-    onSubmit:(e:React.SubmitEvent<HTMLFormElement>)=>void
+    onSubmit:(e:React.SubmitEvent<HTMLFormElement>)=>void,
+    matchBattingStat:BattingStatRow[] | undefined,
+    updateBattingStat:(playerId:number, field:keyof BattingStatRow, value:number)=>void
+    handleBattingSubmit:(e:React.SubmitEvent<HTMLFormElement>)=>void
 }
 
 function StatsRegisterForm({
@@ -43,7 +46,10 @@ function StatsRegisterForm({
     setExitInning,
     createRow,
     deleteRow,
-    onSubmit
+    onSubmit,
+    matchBattingStat,
+    updateBattingStat,
+    handleBattingSubmit
 }:StatsRegisterFormProps){
 
     //スタメン/打撃成績フォームの表示切り替えstate
@@ -215,44 +221,135 @@ function StatsRegisterForm({
             )}
             {/* batting-statsフォーム */}
             {activeTab === "batting" &&(
-            <form className="flex flex-col gap-4 pb-8">
+            <form 
+                className="flex flex-col gap-4 pb-8"
+                onSubmit={handleBattingSubmit}    
+            >
                 <div className="overflow-x-auto max-w-full">
-                    <table className="w-full border-collapse text-base text-center">
+                    <table className="w-full table-fixed border-collapse text-base text-center">
                         <thead>
-                            <tr>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">選手名</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">背番号</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">打数</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">安打</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">二塁打</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">三塁打</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">本塁打</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">打点</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">四球</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">死球</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">犠打</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">犠飛</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">三振</th>
-                                <th className="px-2 py-2 text-gray-500 font-semibold border border-gray-200 whitespace-nowrap">盗塁</th>
+                            <tr className="bg-gray-400">
+                                <th className="w-44 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">選手名</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">打数</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">安打</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">二塁打</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">三塁打</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">本塁打</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">打点</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">四球</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">死球</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">犠打</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">犠飛</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">三振</th>
+                                <th className="w-16 px-2 py-2 text-white font-semibold border border-gray-200 whitespace-nowrap">盗塁</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className="border-b border-gray-200 h-10">
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                                <td className="p-1 border border-gray-200 whitespace-nowrap"></td>
-                            </tr>
+                            {matchBattingStat?.map((row)=>(
+                                <tr 
+                                    key={row.player_id}
+                                    className="border-b border-gray-200 h-10">
+                                    <td className="w-44 p-1 border border-gray-200 whitespace-nowrap">
+                                        {players?.find((player)=>player.id === row.player_id)?.name}
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.at_bats}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "at_bats", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.hits}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "hits", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.doubles}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "doubles", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.triples}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "triples", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.home_runs}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "home_runs", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.runs_batted_in}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "runs_batted_in", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.walks}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "walks", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.hit_by_pitch}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "hit_by_pitch", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.sacrifice_bunts}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "sacrifice_bunts", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.sacrifice_flies}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "sacrifice_flies", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.strikeouts}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "strikeouts", Number(e.target.value))}
+                                        />
+                                    </td>
+                                    <td className="w-16 p-1 border border-gray-200 whitespace-nowrap">
+                                        <input
+                                            className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
+                                            type="number"
+                                            value={row.stolen_bases}
+                                            onChange={(e)=>updateBattingStat(row.player_id, "stolen_bases", Number(e.target.value))}
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>

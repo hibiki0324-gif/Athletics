@@ -58,3 +58,39 @@ export type MatchLineupResponse = {
     is_home: boolean;
     entries: LineupEntryResponse[];
 };
+
+export type BattingStatRow = {
+    player_id: number;
+    at_bats: number;
+    hits: number;
+    doubles: number;
+    triples: number;
+    home_runs: number;
+    runs_batted_in: number;
+    walks: number;
+    hit_by_pitch: number;
+    sacrifice_bunts: number;
+    sacrifice_flies: number;
+    strikeouts: number;
+    stolen_bases: number;
+};
+
+export type MatchBattingStatResponse = {
+    id: number;
+    match_team_id: number;
+    player_id: number;
+    player_name: string;
+    uniform_number: number;
+    at_bats: number;
+    hits: number;
+    doubles: number;
+    triples: number;
+    home_runs: number;
+    runs_batted_in: number;
+    walks: number;
+    hit_by_pitch: number;
+    sacrifice_bunts: number;
+    sacrifice_flies: number;
+    strikeouts: number;
+    stolen_bases: number;
+};
