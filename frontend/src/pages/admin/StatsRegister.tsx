@@ -63,8 +63,7 @@ function StatsRegister() {
     //entry_sequenceの自動計算（削除後も重複しないよう、現在の最大値+1で計算）
     const nextEntrySequence =
         lineupRow && lineupRow.length > 0
-            ? Math.max(...lineupRow.map((row) => row.entry_sequence)) + 1
-            : 1;
+            ? Math.max(...lineupRow.map((row) => row.entry_sequence)) + 1 : 1;
 
     //lineupフォームの値を受け取り
     const lineupRowData: LineupRow = {
@@ -79,6 +78,28 @@ function StatsRegister() {
 
     //+打順追加ボタンイベント（重複チェック→前の行のexit_inningを閉じる→行を追加→フォームを空にする）
     const createRow = () => {
+        //必須チェック：空のまま行を追加できないようにする（+打順を追加はtype="button"のためHTMLのrequiredが効かない）
+        if (
+            battingOrder === undefined ||
+            playerId === undefined ||
+            positionId === undefined ||
+            entryInning === undefined
+        ) {
+            alert("打順・選手・守備・出場回は必須です。");
+            return;
+        }
+
+        //範囲チェック
+        if (battingOrder < 1 || battingOrder > 10) {
+            alert("打順は1〜10の範囲で入力して下さい。");
+            return;
+        }
+
+        if (entryInning < 1 || entryInning > 7) {
+            alert("出場回は1〜7の範囲で入力して下さい。");
+            return;
+        }
+
         //重複チェック：同じ選手が別の打順で既に出場中（exit_inning未設定）の場合は追加しない
         const isActiveElsewhere =
             lineupRow?.some((row) =>
@@ -334,6 +355,26 @@ function StatsRegister() {
     //打撃成績登録処理
     const handleBattingSubmit = (e: React.SubmitEvent<HTMLFormElement>)=>{
         e.preventDefault()
+
+        //ドメインチェック（バックエンドのmodel_validatorと同内容を事前にフロントでもチェックする）
+        for (const stat of matchBattingStat ?? []) {
+            const playerName = players?.find((player) => player.id === stat.player_id)?.name ?? "選手";
+
+            if (stat.hits > stat.at_bats) {
+                alert(`${playerName}：安打数は打数を超えることができません。`);
+                return;
+            }
+
+            if (stat.doubles + stat.triples + stat.home_runs > stat.hits) {
+                alert(`${playerName}：二塁打、三塁打、本塁打の合計は安打数を超えることができません。`);
+                return;
+            }
+
+            if (stat.strikeouts > stat.at_bats) {
+                alert(`${playerName}：三振数は打数を超えることができません。`);
+                return;
+            }
+        }
 
         const statPutFetch = async() => {
             try{

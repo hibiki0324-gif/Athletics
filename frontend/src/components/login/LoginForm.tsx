@@ -12,6 +12,7 @@ function LoginForm(){
                         id="userId"
                         type="text"
                         className="w-full px-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-700"
+                        required
                     />
                 </div>
                 <div className="w-full">
@@ -22,6 +23,7 @@ function LoginForm(){
                         id="password"
                         type="password"
                         className="w-full px-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-700"
+                        required
                     />
                 </div>
                 <div className="flex justify-center pt-[20px]">

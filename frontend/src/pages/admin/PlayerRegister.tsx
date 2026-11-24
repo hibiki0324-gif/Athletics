@@ -8,52 +8,33 @@ import { useSearchParams } from "react-router-dom";
 
 function PlayerRegister() {
 
-    /* ポジションデータを取得 */
+    /* ポジション・選手データを取得 */
     const [positions,setPositions] = useState<Position[] | undefined>(undefined);
+    const [players,setPlayers] = useState<Player[] | undefined>(undefined);
     
     useEffect(()=>{
 
-        const getPositions = async()=>{
+        const getFetch = async()=>{
             try{
                 const positionResponse = await fetch("http://localhost:8000/positions");
+                const playerResponse = await fetch("http://localhost:8000/players");
 
-                if(!positionResponse.ok){
+                if(!positionResponse.ok || !playerResponse.ok){
                     throw new Error("ポジションデータの取得に失敗しました。");
                 }
 
                 const positionResponseData:Position[] = await positionResponse.json();
-                setPositions(positionResponseData);
-            }
-            catch(error){
-                alert(error);
-            }
-        }
-        getPositions();
-
-    },[])
-
-    /* 選手データを取得 */
-    const [players,setPlayers] = useState<Player[] | undefined>(undefined);
-
-    useEffect(()=>{
-        const getPlayers = async()=>{
-            try{
-                const playerResponse = await fetch("http://localhost:8000/players");
-
-                if(!playerResponse.ok){
-                    throw new Error("選手情報を取得できませんでした。");
-                }
-
                 const playerResponseData:Player[] = await playerResponse.json();
+                setPositions(positionResponseData);
                 setPlayers(playerResponseData);
             }
             catch(error){
                 alert(error);
             }
         }
-        getPlayers();
+        getFetch();
 
-    },[])
+    },[]);
 
     /* 選手登録(Player+Position) */
     const [inputName, setInputName] = useState<string>("");
@@ -66,12 +47,38 @@ function PlayerRegister() {
     const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        const uniformNumber = Number(inputNumber);
+
+        //背番号の整数チェック
+        if(inputNumber.trim() === "" || !Number.isInteger(uniformNumber) || uniformNumber < 0){
+            alert("背番号は0以上の整数で入力して下さい");
+            return;
+        }
+
+        //背番号の重複チェック
+        const isDuplicateNumber =
+            players?.some((player) =>
+                player.uniform_number === uniformNumber &&
+                player.id !== selectedPlayer?.id
+            );
+
+        if (isDuplicateNumber) {
+            alert("この背番号は既に使用されています。");
+            return;
+        }
+
+        //選手登録データ雛形
         const playerData = {
             name: inputName,
-            uniform_number: Number(inputNumber),
+            uniform_number: uniformNumber,
             throwing_hand: inputThrowing,
             batting_hand: inputBatting,
             profile_image: inputImage || null,
+        }
+
+        if(inputPositions.length === 0){
+            alert("ポジションは1つ以上選択してください。");
+            return;
         }
 
         const postPlayer = async () => {

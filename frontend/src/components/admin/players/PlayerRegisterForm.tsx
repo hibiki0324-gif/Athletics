@@ -62,7 +62,6 @@ function PlayerRegisterForm({
                             className="w-full h-10 px-3 border border-gray-300 rounded-md"
                             type="text"
                             id="name"
-                            name="name"
                             required
                             onChange={(e)=>setInputName(e.target.value)}
                             value={inputName}
@@ -75,7 +74,8 @@ function PlayerRegisterForm({
                                 className="w-full h-10 px-3 border border-gray-300 rounded-md"
                                 type="number"
                                 id="uniform_number"
-                                name="uniform_number"
+                                required
+                                min={0}
                                 onChange={(e)=>setInputNumber(e.target.value)}
                                 value={inputNumber}
                             />
@@ -83,26 +83,31 @@ function PlayerRegisterForm({
                         <div className="flex flex-col gap-2">
                             <span className="text-xl font-bold">投打</span>
                             <div className="grid grid-cols-2 gap-2">
-                                <input
+                                <select 
                                     className="w-full h-10 px-3 border border-gray-300 rounded-md"
-                                    type="text"
                                     id="throwing_hand"
-                                    name="throwing_hand"
                                     aria-label="投げ手"
                                     required
                                     onChange={(e)=>setInputThrowing(e.target.value)}
                                     value={inputThrowing}
-                                />
-                                <input
+                                >
+                                    <option value="">選択して下さい</option>
+                                    <option value="右">右</option>
+                                    <option value="左">左</option>
+                                </select>
+                                <select 
                                     className="w-full h-10 px-3 border border-gray-300 rounded-md"
-                                    type="text"
                                     id="batting_hand"
-                                    name="batting_hand"
                                     aria-label="打席"
                                     required
                                     onChange={(e)=>setInputBatting(e.target.value)}
                                     value={inputBatting}
-                                />
+                                >
+                                    <option value="">選択して下さい</option>
+                                    <option value="右">右</option>
+                                    <option value="左">左</option>
+                                    <option value="両">両</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -133,7 +138,6 @@ function PlayerRegisterForm({
                             className="w-full h-10 px-3 border border-gray-300 rounded-md"
                             type="text"
                             id="profile_image"
-                            name="profile_image"
                             onChange={(e)=>setInputImage(e.target.value)}
                             value={inputImage ?? ""}
                         />
