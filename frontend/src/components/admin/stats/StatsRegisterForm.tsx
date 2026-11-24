@@ -145,6 +145,8 @@ function StatsRegisterForm({
                                     <input
                                         className="w-14 h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                         type="number"
+                                        min={1}
+                                        max={10}
                                         value={battingOrder ?? ""}
                                         onChange={(e)=>setBattingOrder(Number(e.target.value))}
                                     />
@@ -180,6 +182,7 @@ function StatsRegisterForm({
                                 <td className="w-32 p-1 border border-gray-200 whitespace-nowrap">
                                     <select
                                         className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm"
+                                        required
                                         value={isStarter ? "スタメン" : "途中出場"}
                                         onChange={(e) => setIsStarter(e.target.value === "スタメン")}
                                     >
@@ -191,6 +194,8 @@ function StatsRegisterForm({
                                     <input
                                         className="w-16 h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                         type="number"
+                                        min={1}
+                                        max={7}
                                         value={entryInning  ?? ""}
                                         onChange={(e)=>setEntryInning(Number(e.target.value))}
                                     />
@@ -199,6 +204,8 @@ function StatsRegisterForm({
                                     <input
                                         className="w-16 h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                         type="number"
+                                        min={1}
+                                        max={7}
                                         value={exitInning  ?? ""}
                                         onChange={(e)=>setExitInning(Number(e.target.value))}
                                     />
@@ -248,7 +255,8 @@ function StatsRegisterForm({
                             {matchBattingStat?.map((row)=>(
                                 <tr 
                                     key={row.player_id}
-                                    className="border-b border-gray-200 h-10">
+                                    className="border-b border-gray-200 h-10"
+                                >
                                     <td className="w-44 p-1 border border-gray-200 whitespace-nowrap">
                                         {players?.find((player)=>player.id === row.player_id)?.name}
                                     </td>
@@ -256,6 +264,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.at_bats}
                                             onChange={(e)=>updateBattingStat(row.player_id, "at_bats", Number(e.target.value))}
                                         />
@@ -264,6 +273,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.hits}
                                             onChange={(e)=>updateBattingStat(row.player_id, "hits", Number(e.target.value))}
                                         />
@@ -272,6 +282,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.doubles}
                                             onChange={(e)=>updateBattingStat(row.player_id, "doubles", Number(e.target.value))}
                                         />
@@ -280,6 +291,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.triples}
                                             onChange={(e)=>updateBattingStat(row.player_id, "triples", Number(e.target.value))}
                                         />
@@ -288,6 +300,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.home_runs}
                                             onChange={(e)=>updateBattingStat(row.player_id, "home_runs", Number(e.target.value))}
                                         />
@@ -296,6 +309,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.runs_batted_in}
                                             onChange={(e)=>updateBattingStat(row.player_id, "runs_batted_in", Number(e.target.value))}
                                         />
@@ -304,6 +318,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.walks}
                                             onChange={(e)=>updateBattingStat(row.player_id, "walks", Number(e.target.value))}
                                         />
@@ -312,6 +327,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.hit_by_pitch}
                                             onChange={(e)=>updateBattingStat(row.player_id, "hit_by_pitch", Number(e.target.value))}
                                         />
@@ -320,6 +336,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.sacrifice_bunts}
                                             onChange={(e)=>updateBattingStat(row.player_id, "sacrifice_bunts", Number(e.target.value))}
                                         />
@@ -328,6 +345,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.sacrifice_flies}
                                             onChange={(e)=>updateBattingStat(row.player_id, "sacrifice_flies", Number(e.target.value))}
                                         />
@@ -336,6 +354,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.strikeouts}
                                             onChange={(e)=>updateBattingStat(row.player_id, "strikeouts", Number(e.target.value))}
                                         />
@@ -344,6 +363,7 @@ function StatsRegisterForm({
                                         <input
                                             className="w-full h-9 px-2 border border-gray-300 rounded-md text-sm text-center"
                                             type="number"
+                                            min={0}
                                             value={row.stolen_bases}
                                             onChange={(e)=>updateBattingStat(row.player_id, "stolen_bases", Number(e.target.value))}
                                         />

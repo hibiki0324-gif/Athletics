@@ -80,6 +80,8 @@ function ResultRegisterForm({
                 <td key={index} className="p-1 border border-gray-200">
                     <input
                         type="number"
+                        required
+                        min={0}
                         value={runs}
                         className="w-full h-8 text-center border border-gray-300 rounded"
                         onChange={(e)=>{
@@ -104,6 +106,8 @@ function ResultRegisterForm({
                 <td key={index} className="p-1 border border-gray-200">
                     <input
                         type="number"
+                        required
+                        min={0}
                         value={runs}
                         className="w-full h-8 text-center border border-gray-300 rounded"
                         onChange={(e)=>{
@@ -189,6 +193,8 @@ function ResultRegisterForm({
                                         className="w-full h-10 px-3 border border-gray-300 rounded-md"
                                         type="number"
                                         id="myTeamScore"
+                                        required
+                                        min={0}
                                         onChange={(e)=>setMyTeamScore(Number(e.target.value))}
                                         value={myTeamScore}
                                     />
@@ -201,6 +207,8 @@ function ResultRegisterForm({
                                         className="w-full h-10 px-3 border border-gray-300 rounded-md"
                                         type="number"
                                         id="awayTeamScore"
+                                        required
+                                        min={0}
                                         onChange={(e)=>setAwayTeamScore(Number(e.target.value))}
                                         value={awayTeamScore}
                                     />
@@ -248,6 +256,7 @@ function ResultRegisterForm({
                                     <select
                                         className="w-full h-10 px-3 border border-gray-300 rounded-md"
                                         id="pitcher"
+                                        required
                                         value={pitcherId ?? ""}
                                         onChange={(e)=>setPitcherId(Number(e.target.value))}
                                     >
@@ -264,6 +273,7 @@ function ResultRegisterForm({
                                     <select
                                         className="w-full h-10 px-3 border border-gray-300 rounded-md"
                                         id="catcher"
+                                        required
                                         value={catcherId ?? ""}
                                         onChange={(e)=>setCatcherId(Number(e.target.value))}
                                     >

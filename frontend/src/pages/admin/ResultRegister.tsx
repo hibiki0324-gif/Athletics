@@ -175,6 +175,21 @@ function ResultRegister(){
 
         if(!myTeam || !awayTeam) return;
 
+        //最終イニングとイニング合計の不一致チェック
+        const myInningsTotal = myInnings.reduce((sum, runs) => sum + runs, 0);
+        const awayInningsTotal = awayInnings.reduce((sum, runs) => sum + runs, 0);
+
+        if (myTeamScore !== myInningsTotal || awayTeamScore !== awayInningsTotal) {
+            alert("最終スコアとイニングスコアの合計が一致していません。");
+            return;
+        }
+
+        //勝利投手と敗戦投手の重複チェック
+        if (winPitcherId && winPitcherId === lossPitcherId) {
+            alert("勝利投手と敗戦投手に同じ選手は選べません。");
+            return;
+        }
+
         //いずれかのチームにイニングスコアが1件もなければ、まだ結果が未登録の試合（アラート文言の切り分け用）
         const hasResult = selectedMatch.innings.some((team)=>team.innings.length > 0);
 
@@ -290,7 +305,6 @@ function ResultRegister(){
 
                 await matchDecisionsRequest.json();
                 alert(hasResult ? "試合結果を更新しました。" : "試合結果を登録しました。");
-
                 getResults();
                 clearButton();
 
