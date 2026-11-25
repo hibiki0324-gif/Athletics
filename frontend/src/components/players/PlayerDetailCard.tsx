@@ -1,15 +1,25 @@
 import { Link } from "react-router-dom";
 import type { Player } from "../../types/player";
+import type { SeasonStatsRow } from "../../types/stats";
 import playerImg from '../../assets/no-image.png'
 
 type PlayerDetailCardProps = {
     player?: Player;
+    seasonStats?: SeasonStatsRow[];
+    latestSeasonStat?: SeasonStatsRow;
 };
 
-function PlayerDetailCard({ player }: PlayerDetailCardProps){
+//打率・出塁率・長打率の表示用（0.352 → .352）
+const formatAvg = (value: number) => value.toFixed(3).replace(/^0\./, ".");
+
+function PlayerDetailCard({ player, seasonStats, latestSeasonStat }: PlayerDetailCardProps){
     if (!player) {
         return <p>選手情報が見つかりませんでした。</p>;
     }
+
+    //年度が新しい順に並べる
+    const sortedSeasonStats =
+        seasonStats?.slice().sort((a, b) => b.season.year - a.season.year);
 
     return(
         <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto py-6 px-6">
@@ -36,36 +46,33 @@ function PlayerDetailCard({ player }: PlayerDetailCardProps){
 
             <div>
                 <p className="mb-4 text-xl font-bold text-slate-900">今シーズン成績</p>
-                <div className="grid grid-cols-5 gap-4 border border-gray-200 shadow-sm bg-white px-6 py-5 md:grid-cols-10">
+                <div className="grid grid-cols-3 gap-4 border border-gray-200 shadow-sm bg-white px-6 py-5 md:grid-cols-9">
                     <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        試合数<span className="text-2xl font-bold text-slate-900">18</span>
+                        試合数<span className="text-2xl font-bold text-slate-900">{latestSeasonStat?.stat.games ?? 0}</span>
                     </p>
                     <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        打率<span className="text-2xl font-bold text-slate-900">.352</span>
+                        打率<span className="text-2xl font-bold text-slate-900">{formatAvg(latestSeasonStat?.stat.batting_average ?? 0)}</span>
                     </p>
                     <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        安打<span className="text-2xl font-bold text-slate-900">25</span>
+                        安打<span className="text-2xl font-bold text-slate-900">{latestSeasonStat?.stat.hits ?? 0}</span>
                     </p>
                     <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        本塁打<span className="text-2xl font-bold text-slate-900">5</span>
+                        本塁打<span className="text-2xl font-bold text-slate-900">{latestSeasonStat?.stat.home_runs ?? 0}</span>
                     </p>
                     <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        打点<span className="text-2xl font-bold text-slate-900">18</span>
+                        打点<span className="text-2xl font-bold text-slate-900">{latestSeasonStat?.stat.runs_batted_in ?? 0}</span>
                     </p>
                     <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        得点<span className="text-2xl font-bold text-slate-900">14</span>
+                        盗塁<span className="text-2xl font-bold text-slate-900">{latestSeasonStat?.stat.stolen_bases ?? 0}</span>
                     </p>
                     <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        盗塁<span className="text-2xl font-bold text-slate-900">6</span>
+                        出塁率<span className="text-2xl font-bold text-slate-900">{formatAvg(latestSeasonStat?.stat.on_base_percentage ?? 0)}</span>
                     </p>
                     <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        出塁率<span className="text-2xl font-bold text-slate-900">.432</span>
+                        長打率<span className="text-2xl font-bold text-slate-900">{formatAvg(latestSeasonStat?.stat.slugging_percentage ?? 0)}</span>
                     </p>
                     <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        長打率<span className="text-2xl font-bold text-slate-900">.621</span>
-                    </p>
-                    <p className="flex flex-col items-center gap-1 text-sm text-gray-500 font-medium">
-                        OPS<span className="text-2xl font-bold text-slate-900">1.053</span>
+                        OPS<span className="text-2xl font-bold text-slate-900">{(latestSeasonStat?.stat.ops ?? 0).toFixed(3)}</span>
                     </p>
                 </div>
             </div>
@@ -82,7 +89,6 @@ function PlayerDetailCard({ player }: PlayerDetailCardProps){
                                 <th className="px-4 py-3 text-right">安打</th>
                                 <th className="px-4 py-3 text-right">本塁打</th>
                                 <th className="px-4 py-3 text-right">打点</th>
-                                <th className="px-4 py-3 text-right">得点</th>
                                 <th className="px-4 py-3 text-right">盗塁</th>
                                 <th className="px-4 py-3 text-right">出塁率</th>
                                 <th className="px-4 py-3 text-right">長打率</th>
@@ -90,19 +96,28 @@ function PlayerDetailCard({ player }: PlayerDetailCardProps){
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className="border-b border-gray-100 last:border-0 text-lg text-slate-900">
-                                <td className="px-4 py-3 ">2026</td>
-                                <td className="px-4 py-3 text-right">18</td>
-                                <td className="px-4 py-3 text-right">.352</td>
-                                <td className="px-4 py-3 text-right">25</td>
-                                <td className="px-4 py-3 text-right">5</td>
-                                <td className="px-4 py-3 text-right">18</td>
-                                <td className="px-4 py-3 text-right">14</td>
-                                <td className="px-4 py-3 text-right">6</td>
-                                <td className="px-4 py-3 text-right">.432</td>
-                                <td className="px-4 py-3 text-right">.621</td>
-                                <td className="px-4 py-3 text-right">1.053</td>
-                            </tr>
+                            {sortedSeasonStats && sortedSeasonStats.length > 0 ? (
+                                sortedSeasonStats.map((row)=>(
+                                    <tr key={row.season.id} className="border-b border-gray-100 last:border-0 text-lg text-slate-900">
+                                        <td className="px-4 py-3">{row.season.year}</td>
+                                        <td className="px-4 py-3 text-right">{row.stat.games}</td>
+                                        <td className="px-4 py-3 text-right">{formatAvg(row.stat.batting_average)}</td>
+                                        <td className="px-4 py-3 text-right">{row.stat.hits}</td>
+                                        <td className="px-4 py-3 text-right">{row.stat.home_runs}</td>
+                                        <td className="px-4 py-3 text-right">{row.stat.runs_batted_in}</td>
+                                        <td className="px-4 py-3 text-right">{row.stat.stolen_bases}</td>
+                                        <td className="px-4 py-3 text-right">{formatAvg(row.stat.on_base_percentage)}</td>
+                                        <td className="px-4 py-3 text-right">{formatAvg(row.stat.slugging_percentage)}</td>
+                                        <td className="px-4 py-3 text-right">{row.stat.ops.toFixed(3)}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td className="px-4 py-3 text-center text-gray-500" colSpan={10}>
+                                        成績データがありません
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
