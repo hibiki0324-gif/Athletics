@@ -1,3 +1,5 @@
+import type { Season } from "./match";
+
 export type StatsRow = {
     rank: number;
     name: string;
@@ -73,6 +75,11 @@ export type BattingStatRow = {
     sacrifice_flies: number;
     strikeouts: number;
     stolen_bases: number;
+};
+
+export type SeasonStatsRow = {
+    season: Season;
+    stat: SeasonBattingStat;
 };
 
 export type MatchBattingStatResponse = {
