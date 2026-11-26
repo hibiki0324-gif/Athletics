@@ -1,10 +1,30 @@
 import { Link } from "react-router-dom";
-import type { MatchDetail } from "../../types/match";
+import type { Battery, MatchDetail } from "../../types/match";
 
 type ResultDetailCardProps = {
     result?: MatchDetail;
     isLoading: boolean;
 }
+
+//選手名表示用（苗字に変換）
+const getLastName = (fullName?: string) => fullName?.split(/\s+/)[0] ?? "";
+
+//バッテリー表示用（登板順に並べ、交代があれば"、"で複数人を列挙する）
+const formatBattery = (batteries?: Battery[]) => {
+    if (!batteries || batteries.length === 0) return "-";
+
+    const sorted = batteries.slice().sort((a, b) => a.sequence_no - b.sequence_no);
+
+    const pitchers = [...new Set(sorted.map((battery) => battery.pitcher_name))]
+        .map((name) => getLastName(name))
+        .join("、");
+    const catchers = [...new Set(sorted.map((battery) => battery.catcher_name))]
+        .map((name) => getLastName(name))
+        .join("、");
+
+    return `${pitchers} - ${catchers}`;
+};
+
 function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
 
     if (isLoading) {
@@ -22,10 +42,12 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
     const winPitcher = result?.pitching_decisions.find((win)=>win.decision === "WIN");
     const lossPitcher = result?.pitching_decisions.find((loss)=>loss.decision === "LOSS");
     const savePitcher = result?.pitching_decisions.find((save)=>save.decision === "SAVE");
-    const homeBattery = result?.batteries.find((home)=>home.match_team_id === homeTeam?.id);
-    const awayBattery = result?.batteries.find((away)=>away.match_team_id === awayTeam?.id);
+    const homeBatteries = result?.batteries.filter((battery)=>battery.match_team_id === homeTeam?.id);
+    const awayBatteries = result?.batteries.filter((battery)=>battery.match_team_id === awayTeam?.id);
     const myTeam = result?.teams.find((team)=>team.team_name === "アスレチックス");
     const myLineup = result?.lineup.filter((entry)=>entry.match_team_id === myTeam?.id);
+    const homeHomeRuns = result?.batting_stats.filter((stat)=>stat.match_team_id === homeTeam?.id && stat.home_runs > 0);
+    const awayHomeRuns = result?.batting_stats.filter((stat)=>stat.match_team_id === awayTeam?.id && stat.home_runs > 0);
 
     //打撃チーム成績計算系
     const myBattingStats = result?.batting_stats.filter((s)=>s.match_team_id === myTeam?.id);
@@ -86,16 +108,16 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
             <div className="overflow-x-auto border border-gray-200 shadow-sm bg-white">
                 <table className="w-full min-w-[600px] border-collapse">
                     <thead>
-                        <tr className="border-b border-gray-200 bg-gray-50 text-base font-medium text-gray-500">
-                            <th className="px-4 py-3 text-left">TEAM</th>
-                            <th className="px-4 py-3 text-center">1</th>
-                            <th className="px-4 py-3 text-center">2</th>
-                            <th className="px-4 py-3 text-center">3</th>
-                            <th className="px-4 py-3 text-center">4</th>
-                            <th className="px-4 py-3 text-center">5</th>
-                            <th className="px-4 py-3 text-center">6</th>
-                            <th className="px-4 py-3 text-center">7</th>
-                            <th className="px-4 py-3 text-center text-lg">R</th>
+                        <tr className="border-b border-gray-200 bg-gray-400 text-base font-medium text-gray-500">
+                            <th className="px-4 py-3 text-white text-left">TEAM</th>
+                            <th className="px-4 py-3 text-white text-center">1</th>
+                            <th className="px-4 py-3 text-white text-center">2</th>
+                            <th className="px-4 py-3 text-white text-center">3</th>
+                            <th className="px-4 py-3 text-white text-center">4</th>
+                            <th className="px-4 py-3 text-white text-center">5</th>
+                            <th className="px-4 py-3 text-white text-center">6</th>
+                            <th className="px-4 py-3 text-white text-center">7</th>
+                            <th className="px-4 py-3 text-white text-center text-lg">R</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -135,15 +157,15 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
                         <tbody>
                             <tr className="border-b border-gray-100">
                                 <th className="py-2 pr-3 text-left text-sm font-medium text-gray-500">勝利投手</th>
-                                <td className="py-2 text-sm text-slate-900">{winPitcher?.player_name}</td>
+                                <td className="py-2 text-sm text-slate-900">{getLastName(winPitcher?.player_name)}</td>
                             </tr>
                             <tr className="border-b border-gray-100">
                                 <th className="py-2 pr-3 text-left text-sm font-medium text-gray-500">敗戦投手</th>
-                                <td className="py-2 text-sm text-slate-900">{lossPitcher?.player_name}</td>
+                                <td className="py-2 text-sm text-slate-900">{getLastName(lossPitcher?.player_name)}</td>
                             </tr>
                             <tr>
                                 <th className="py-2 pr-3 text-left text-sm font-medium text-gray-500">セーブ</th>
-                                <td className="py-2 text-sm text-slate-900">{savePitcher?.player_name}</td>
+                                <td className="py-2 text-sm text-slate-900">{getLastName(savePitcher?.player_name)}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -156,11 +178,19 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
                         <tbody>
                             <tr>
                                 <th className="py-2 pr-3 text-left text-sm font-medium text-gray-500">{homeTeam?.team_name}</th>
-                                <td className="py-2 text-sm text-slate-900"></td>
+                                <td className="py-2 text-sm text-slate-900">
+                                    {homeHomeRuns && homeHomeRuns.length > 0
+                                        ? homeHomeRuns.map((stat)=>getLastName(stat.player_name)).join("、")
+                                        : "-"}
+                                </td>
                             </tr>
                             <tr>
                                 <th className="py-2 pr-3 text-left text-sm font-medium text-gray-500">{awayTeam?.team_name}</th>
-                                <td className="py-2 text-sm text-slate-900"></td>
+                                <td className="py-2 text-sm text-slate-900">
+                                    {awayHomeRuns && awayHomeRuns.length > 0
+                                        ? awayHomeRuns.map((stat)=>getLastName(stat.player_name)).join("、")
+                                        : "-"}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -174,13 +204,13 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
                             <tr>
                                 <th className="py-2 pr-3 text-left text-sm font-medium text-gray-500">{homeTeam?.team_name}</th>
                                 <td className="py-2 text-sm text-slate-900">
-                                    {homeBattery?.pitcher_name}-{homeBattery?.catcher_name}
+                                    {formatBattery(homeBatteries)}
                                 </td>
                             </tr>
                             <tr>
                                 <th className="py-2 pr-3 text-left text-sm font-medium text-gray-500">{awayTeam?.team_name}</th>
                                 <td className="py-2 text-sm text-slate-900">
-                                    {awayBattery?.pitcher_name}-{awayBattery?.catcher_name}
+                                    {formatBattery(awayBatteries)}
                                 </td>
                             </tr>
                         </tbody>
@@ -192,21 +222,21 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
                 <p className="mb-4 text-xl font-bold text-slate-900">打撃成績</p>
                 <div className="overflow-x-auto border border-gray-200 shadow-sm bg-white">
                     <table className="w-full min-w-[900px] border-collapse">
-                        <thead className="border-b border-gray-200 bg-gray-50 text-base font-medium text-gray-500">
+                        <thead className="border-b border-gray-200 bg-gray-400 text-base font-medium text-gray-500">
                             <tr>
-                                <th className="px-3 py-3 text-center">打順</th>
-                                <th className="px-3 py-3 text-center">位置</th>
-                                <th className="px-3 py-3 text-left">選手名</th>
-                                <th className="px-3 py-3 text-right">打数</th>
-                                <th className="px-3 py-3 text-right">安打</th>
-                                <th className="px-3 py-3 text-right">本塁打</th>
-                                <th className="px-3 py-3 text-right">打点</th>
-                                <th className="px-3 py-3 text-right">二塁打</th>
-                                <th className="px-3 py-3 text-right">三塁打</th>
-                                <th className="px-3 py-3 text-right">四死球</th>
-                                <th className="px-3 py-3 text-right">犠飛</th>
-                                <th className="px-3 py-3 text-right">三振</th>
-                                <th className="px-3 py-3 text-right">打率</th>
+                                <th className="px-3 py-3 text-white text-center">打順</th>
+                                <th className="px-3 py-3 text-white text-center">位置</th>
+                                <th className="px-3 py-3 text-white text-left">選手名</th>
+                                <th className="px-3 py-3 text-white text-right">打数</th>
+                                <th className="px-3 py-3 text-white text-right">安打</th>
+                                <th className="px-3 py-3 text-white text-right">本塁打</th>
+                                <th className="px-3 py-3 text-white text-right">打点</th>
+                                <th className="px-3 py-3 text-white text-right">二塁打</th>
+                                <th className="px-3 py-3 text-white text-right">三塁打</th>
+                                <th className="px-3 py-3 text-white text-right">四死球</th>
+                                <th className="px-3 py-3 text-white text-right">犠飛</th>
+                                <th className="px-3 py-3 text-white text-right">三振</th>
+                                <th className="px-3 py-3 text-white text-right">打率</th>
                             </tr>
                         </thead>
                         <tbody className="border-b border-gray-100 text-base text-slate-900">
@@ -215,7 +245,7 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
                                     const average = 
                                         stat && stat.at_bats > 0 ? (stat.hits / stat.at_bats).toFixed(3).replace(/^0/, ""): "-";
                                     return (
-                                        <tr className="border-b border-gray-100" key={entry.id}>
+                                        <tr className="border-b border-gray-200" key={entry.id}>
                                             <td className="px-3 py-3 text-center">{entry.batting_order}</td>
                                             <td className="px-3 py-3 text-center">{entry.position_name}</td>
                                             <td className="px-3 py-3">{entry.player_name}</td>
@@ -232,7 +262,7 @@ function ResultDetailCard({result,isLoading}:ResultDetailCardProps){
                                         </tr>
                                     );
                                 })}
-                            <tr className="bg-gray-50 font-bold text-lg text-slate-900">
+                            <tr className="bg-gray-100 font-bold text-lg text-slate-900">
                                 <td colSpan={3} className="px-3 py-3">TOTAL</td>
                                 <td className="px-3 py-3 text-right">{myTotal?.at_bats}</td>
                                 <td className="px-3 py-3 text-right">{myTotal?.hits}</td>
